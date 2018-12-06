@@ -1,0 +1,193 @@
+---
+title: 'SQL: GROUP BY Statements - HAVING'
+author: "Sulman Khan"
+date: "`r format(Sys.time(), ' %B %d, %Y')`"
+output: 
+  html_document:
+    css: C:/Users/sulma/OneDrive/Desktop/Data Science/Machine Learning/gf_small_touches.css
+    highlight: tango
+    mathjax: default
+    theme: cerulean
+---
+
+```{r setup, cache = FALSE, echo = FALSE, message = FALSE, warning = FALSE, tidy = FALSE}
+require(knitr)
+options(width = 300 , scipen = 5)
+options(dplyr.print_max = 200)
+# options(width = 100, digits = 7)
+opts_chunk$set(message = FALSE, error = FALSE, warning = FALSE, 
+               collapse = TRUE, tidy = FALSE,
+               cache = TRUE, cache.path = '.cache/', 
+               fig.align = 'left', dpi = 100, fig.path = 'figures/Introductiontotextanalytics/')
+# opts_chunk$set(dev="png", 
+#                dev.args=list(type="cairo"),
+#                dpi=96)
+```
+---
+
+## SQL: GROUP BY Statements
+
+
+### HAVING
+
+The HAVING clause sets the condition for group rows created by the GROUP BY clause after the GROUP BY clause applies while the WHERE clause sets the condition for individual rows before GROUP BY clause applies.
+
+
+**Conditions**:
+
+| Operator       | Description           | 
+| ------------- |:-------------:| 
+| \(=\)         | Equal         | 
+| \(>\)         | Greater than  | 
+| \(<\)         | Less than     |
+| \(\geq\)      | Greater than or equal to |
+| \(\leq\)      | Less than or equal to |
+| \(\neq\)      | Not equal |
+| AND        | Logical operator AND |
+| OR         | Logical operator OR |
+
+
+**Syntax**: 
+
+```{sql, eval = FALSE}
+-- HAVING
+SELECT column_1, aggregate_function(column_2)
+FROM table_name
+GROUP BY column_1
+HAVING condition;
+```
+
+
+**Example**: Filter out the customers who spent more than $200. 
+
+```{sql, eval = FALSE}
+-- Filter out the customers who spent more than $200. 
+SELECT customer_id, SUM(amount)
+FROM payment
+GROUP BY customer_id
+HAVING SUM(amount) > 200;
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="dvdrental", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+SELECT customer_id, SUM(amount)
+FROM payment
+GROUP BY customer_id
+HAVING SUM(amount) > 200
+                
+")
+```
+
+**Example**: Which store(s) has/have more than 300 customers?
+
+```{sql, eval = FALSE}
+-- Find which stores have more than 300 customers
+SELECT store_id, COUNT(customer_id)
+FROM customer
+GROUP BY store_id
+HAVING COUNT(customer_id) > 300;
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="dvdrental", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+SELECT store_id, COUNT(customer_id)
+FROM customer
+GROUP BY store_id
+HAVING COUNT(customer_id) > 300
+                
+")
+```
+
+**Example**: Filter out the R, G, and PG ratings and then filter out the average rental rates thare are less than $3.0 
+
+```{sql, eval = FALSE}
+-- Filter out the R, G, and PG ratings
+SELECT rating, AVG(rental_rate)
+FROM film
+WHERE rating IN ('R','G','PG')
+GROUP BY rating
+HAVING AVG(rental_rate) <3;
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="dvdrental", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+SELECT rating, AVG(rental_rate)
+FROM film
+WHERE rating IN ('R','G','PG')
+GROUP BY rating
+HAVING AVG(rental_rate) <3
+                
+")
+```
+
+### Challenge
+
+**Problem**: What customers (by customer_id) are eligble for the platinum credit card, which requres the customer to have at least 40 transaction payments?
+
+```{sql, eval = FALSE}
+-- Platnium Card Elgibility
+SELECT customer_id, COUNT(amount)
+FROM payment
+GROUP BY customer_id
+HAVING COUNT(amount) >= 40;
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="dvdrental", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+SELECT customer_id, COUNT(amount)
+FROM payment
+GROUP BY customer_id
+HAVING COUNT(amount) >= 40
+                
+")
+```
+
+**Problem**: When grouped by rating, what movie ratings have an average rental duration of more than 5 days?
+
+```{sql, eval = FALSE}
+-- Which movies have an average rental duration of more than 5 days
+SELECT rating, AVG(rental_duration)
+FROM film
+GROUP BY rating
+HAVING AVG(rental_duration) > 5;
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="dvdrental", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+SELECT rating, AVG(rental_duration)
+FROM film
+GROUP BY rating
+HAVING AVG(rental_duration) > 5
+                
+")
+```

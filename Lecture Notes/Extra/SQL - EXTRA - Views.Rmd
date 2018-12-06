@@ -1,0 +1,164 @@
+---
+title: 'SQL: EXTRA - VIEWS'
+author: "Sulman Khan"
+date: "`r format(Sys.time(), ' %B %d, %Y')`"
+output: 
+  html_document:
+    css: C:/Users/sulma/OneDrive/Desktop/Data Science/Machine Learning/gf_small_touches.css
+    highlight: tango
+    mathjax: default
+    theme: cerulean
+---
+
+```{r setup, cache = FALSE, echo = FALSE, message = FALSE, warning = FALSE, tidy = FALSE}
+require(knitr)
+options(width = 300 , scipen = 5)
+options(dplyr.print_max = 200)
+# options(width = 100, digits = 7)
+opts_chunk$set(message = FALSE, error = FALSE, warning = FALSE, 
+               collapse = TRUE, tidy = FALSE,
+               cache = TRUE, cache.path = '.cache/', 
+               fig.align = 'left', dpi = 100, fig.path = 'figures/Introductiontotextanalytics/')
+# opts_chunk$set(dev="png", 
+#                dev.args=list(type="cairo"),
+#                dpi=96)
+```
+---
+
+## SQL: EXTRA - VIEWS
+
+
+### VUEWS
+
+A view is a database object that is of stored query. Simplify the complexity of a query. 
+
+**Syntax**: 
+
+```{sql, eval = FALSE}
+-- VIEW 
+CREATE VIEW view_name AS query
+```
+
+
+**Example**: VIEW 
+
+```{sql, eval = FALSE}
+-- View
+CREATE VIEW customer_info AS 
+SELECT first_name, last_name, email, address, phone
+FROM customer
+JOIN address
+ON customer.address_id = address.address_id;
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="dvdrental", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+CREATE VIEW customer_info AS 
+SELECT first_name, last_name, email, address, phone
+FROM customer
+JOIN address
+ON customer.address_id = address.address_id
+")
+```
+
+```{sql, eval = FALSE}
+-- View
+SELECT * FROM customer_info
+limit 20;
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="dvdrental", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+SELECT * FROM customer_info
+limit 20
+")
+```
+
+**Example**: Rename customer_info to customer_master_list
+
+```{sql, eval = FALSE}
+-- ALTER VIEW
+ALTER VIEW customer_info RENAME TO customer_master_list;
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="dvdrental", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+ALTER VIEW customer_info RENAME TO customer_master_list
+")
+```
+
+```{sql, eval = FALSE}
+-- SELECT
+SELECT * FROM customer_master_list
+limit 20;
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="dvdrental", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+SELECT * FROM customer_master_list
+limit 20
+")
+```
+
+**Example**: DROP VIEW
+
+```{sql, eval = FALSE}
+-- DROP VIEW
+DROP VIEW customer_master_list;
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="dvdrental", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+DROP VIEW customer_master_list;
+")
+```
+
+```{sql, eval = FALSE, one}
+-- SELECT
+SELECT * FROM customer_master_list
+limit 20;
+```
+
+```{r, echo=FALSE, message=FALSE, two}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="dvdrental", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+SELECT * FROM customer_master_list
+limit 20
+")
+```
+

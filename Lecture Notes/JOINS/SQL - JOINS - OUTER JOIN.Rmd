@@ -1,0 +1,126 @@
+---
+title: 'SQL: JOINS - OUTER JOIN'
+author: "Sulman Khan"
+date: "`r format(Sys.time(), ' %B %d, %Y')`"
+output: 
+  html_document:
+    css: C:/Users/sulma/OneDrive/Desktop/Data Science/Machine Learning/gf_small_touches.css
+    highlight: tango
+    mathjax: default
+    theme: cerulean
+---
+
+```{r setup, cache = FALSE, echo = FALSE, message = FALSE, warning = FALSE, tidy = FALSE}
+require(knitr)
+options(width = 300 , scipen = 5)
+options(dplyr.print_max = 200)
+# options(width = 100, digits = 7)
+opts_chunk$set(message = FALSE, error = FALSE, warning = FALSE, 
+               collapse = TRUE, tidy = FALSE,
+               cache = TRUE, cache.path = '.cache/', 
+               fig.align = 'left', dpi = 100, fig.path = 'figures/Introductiontotextanalytics/')
+# opts_chunk$set(dev="png", 
+#                dev.args=list(type="cairo"),
+#                dpi=96)
+```
+---
+
+## SQL: JOINS - OUTER JOIN
+
+
+### OUTER JOINs
+
+#### FULL OUTER JOIN
+
+The FULL OUTER JOIN produces the set of all records in Table A and Table B, with matching records from both sides where available. If there is no match, the missing side will contain null.
+
+
+**Syntax**: 
+
+```{sql, eval = FALSE}
+-- FULL OUTER JOIN
+SELECT *
+FROM TableA
+FULL OUTER JOIN TableB ON TableA.name = TableB.name;
+```
+
+#### FULL OUTER JOIN with WHERE
+
+The FULL OUTER JOIN with WHERE produces the set of records unqiue to Table A and Table B, we perform the same full outer join, then exclude the records we don't want from both sides via a where clause.
+
+**Syntax**: 
+
+```{sql, eval = FALSE}
+-- FULL OUTER JOIN
+SELECT *
+FROM TableA
+LEFT OUTER JOIN TableB ON TableA.name = TableB.name
+WHERE TableB.id IS null OR TableB.id IS null;
+```
+
+#### LEFT OUTER JOIN
+
+The LEFT OUTER JOIN produces a complete set of records from Table A, with the matching records(where available) in Table B. If there is no match, the right side will contain null.
+
+**Syntax**: 
+
+```{sql, eval = FALSE}
+-- FULL OUTER JOIN
+SELECT *
+FROM TableA
+LEFT OUTER JOIN TableB ON TableA.name = TableB.name;
+```
+
+
+
+
+#### LEFT OUTER JOIN with WHERE
+
+The LEFT OUTER JOIN with WHERE produces the set of records only in Table A, but not in Table B, we perform the same left outer join, then exclude the records we don't want from the right side via a where clause.
+
+**Syntax**: 
+
+```{sql, eval = FALSE}
+-- FULL OUTER JOIN
+SELECT *
+FROM TableA
+LEFT OUTER JOIN TableB ON TableA.name = TableB.name
+WHERE TableB.id IS null;
+```
+
+### OUTER JOIN Example
+
+**Example**: Perform a LEFT OUTHER JOIN with the film and inventory tables to obtain a copy of all movies that are not in iventory.
+
+```{sql, eval = FALSE}
+-- Perform a LEFT OUTHER JOIN with the film and inventory tables.
+SELECT film.film_id, film.title, inventory_id
+FROM film
+LEFT OUTER JOIN inventory ON inventory.film_id = film.film_id
+WHERE inventory.film_id IS NULL
+ORDER BY film.film_id;
+-- Second Solution
+SELECT film.film_id, film.title, inventory_id
+FROM film
+LEFT OUTER JOIN inventory ON inventory.film_id = film.film_id
+WHERE inventory_id is NULL
+ORDER BY film.title;
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="dvdrental", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+SELECT film.film_id, film.title, inventory_id
+FROM film
+LEFT OUTER JOIN inventory ON inventory.film_id = film.film_id
+WHERE inventory.film_id IS NULL
+ORDER BY film.film_id  
+")
+```
+
+

@@ -1,0 +1,47 @@
+---
+title: 'SQL: JOINS - UNION'
+author: "Sulman Khan"
+date: "`r format(Sys.time(), ' %B %d, %Y')`"
+output: 
+  html_document:
+    css: C:/Users/sulma/OneDrive/Desktop/Data Science/Machine Learning/gf_small_touches.css
+    highlight: tango
+    mathjax: default
+    theme: cerulean
+---
+
+```{r setup, cache = FALSE, echo = FALSE, message = FALSE, warning = FALSE, tidy = FALSE}
+require(knitr)
+options(width = 300 , scipen = 5)
+options(dplyr.print_max = 200)
+# options(width = 100, digits = 7)
+opts_chunk$set(message = FALSE, error = FALSE, warning = FALSE, 
+               collapse = TRUE, tidy = FALSE,
+               cache = TRUE, cache.path = '.cache/', 
+               fig.align = 'left', dpi = 100, fig.path = 'figures/Introductiontotextanalytics/')
+# opts_chunk$set(dev="png", 
+#                dev.args=list(type="cairo"),
+#                dpi=96)
+```
+---
+
+## SQL: JOINS - UNION
+
+
+### UNION
+
+The UNION operator combines result sets of two or more SELECT statements into a single result set.
+
+**Syntax**: 
+
+```{sql, eval = FALSE}
+-- UNION
+SELECT column_1, column_2
+FROM table_name_1
+UNION
+SELECT column_1, column_2
+FROM table_name_2;
+```
+
+
+

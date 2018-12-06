@@ -1,0 +1,292 @@
+---
+title: 'SQL: GROUP BY Statements - GROUP BY'
+author: "Sulman Khan"
+date: "`r format(Sys.time(), ' %B %d, %Y')`"
+output: 
+  html_document:
+    css: C:/Users/sulma/OneDrive/Desktop/Data Science/Machine Learning/gf_small_touches.css
+    highlight: tango
+    mathjax: default
+    theme: cerulean
+---
+
+```{r setup, cache = FALSE, echo = FALSE, message = FALSE, warning = FALSE, tidy = FALSE}
+require(knitr)
+options(width = 300 , scipen = 5)
+options(dplyr.print_max = 200)
+# options(width = 100, digits = 7)
+opts_chunk$set(message = FALSE, error = FALSE, warning = FALSE, 
+               collapse = TRUE, tidy = FALSE,
+               cache = TRUE, cache.path = '.cache/', 
+               fig.align = 'left', dpi = 100, fig.path = 'figures/Introductiontotextanalytics/')
+# opts_chunk$set(dev="png", 
+#                dev.args=list(type="cairo"),
+#                dpi=96)
+```
+---
+
+## SQL: GROUP BY Statements
+
+
+### GROUP BY
+
+The GROUP BY clause divides thw row return from the SELECT statement into groups.
+
+**Syntax**: 
+
+```{sql, eval = FALSE}
+-- GROUP BY
+SELECT column_1, aggregate_function(column_2)
+FROM table_name
+GROUP BY column_1;
+```
+
+
+**Example**: GROUP BY without an aggregrate function
+
+```{sql, eval = FALSE}
+-- GROUP BY without an aggregrate function
+SELECT customer_id
+FROM payment
+GROUP BY customer_id;
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="dvdrental", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+SELECT customer_id
+FROM payment
+GROUP BY customer_id
+                
+")
+```
+
+**Example**: GROUP BY with SUM function
+
+```{sql, eval = FALSE}
+-- GROUP BY with SUM function
+SELECT customer_id, sum(AMOUNT)
+FROM payment
+GROUP BY customer_id;
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="dvdrental", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+SELECT customer_id, sum(AMOUNT)
+FROM payment
+GROUP BY customer_id
+                
+")
+```
+
+**Example**: GROUP BY with SUM function, and now use ORDER BY in a descending order
+
+```{sql, eval = FALSE}
+-- GROUP BY with SUM function, and now use ORDER BY in a descending order
+SELECT customer_id, sum(AMOUNT)
+FROM payment
+GROUP BY customer_id
+ORDER BY SUM(amount) DESC;
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="dvdrental", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+SELECT customer_id, sum(AMOUNT)
+FROM payment
+GROUP BY customer_id
+ORDER BY SUM(amount) DESC
+                
+")
+```
+
+**Example**: Count the number of transactions each staff member has been processing
+
+```{sql, eval = FALSE}
+-- Count the number of transactions each staff member has been processing
+SELECT staff_id, COUNT(payment_id)
+FROM payment
+GROUP BY staff_id;
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="dvdrental", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+SELECT staff_id, COUNT(payment_id)
+FROM payment
+GROUP BY staff_id
+                
+")
+```
+
+**Example**: How many films of rating type do we have?
+
+```{sql, eval = FALSE}
+-- Count the number of films for each raing type
+SELECT rating, COUNT(rating) 
+FROM FILM
+GROUP BY rating;
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="dvdrental", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+SELECT rating, COUNT(rating) 
+FROM FILM
+GROUP BY rating
+                
+")
+```
+
+**Example**: How many rental durations are in the film table.
+
+```{sql, eval = FALSE}
+-- Count the number of rental durations
+SELECT rental_duration, COUNT(rental_duration)
+FROM FILM
+GROUP BY rental_duration;
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="dvdrental", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+SELECT rental_duration, COUNT(rental_duration)
+FROM FILM
+GROUP BY rental_duration
+                
+")
+```
+
+
+**Example**: What is the average rental rate for a movie's rating?
+
+```{sql, eval = FALSE}
+-- Average rental rate for a movie's rating
+SELECT rating, AVG(rental_rate)
+FROM film
+GROUP BY rating;
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="dvdrental", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+SELECT rating, AVG(rental_rate)
+FROM film
+GROUP BY rating
+                
+")
+```
+
+### Challenge
+
+**Problem**: How many payments did each staff member handle? And how much was the total amount processed by each staff member?
+
+```{sql, eval = FALSE}
+-- Count the number of payments for each staff member and obtain the total amount
+SELECT staff_id, COUNT(amount), SUM(amount) 
+FROM payment
+GROUP BY staff_id;
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="dvdrental", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+SELECT staff_id, COUNT(amount), SUM(amount) 
+FROM payment
+GROUP BY staff_id;
+                
+")
+```
+
+**Problem**: What is the average replacement cost of movies by rating?
+
+```{sql, eval = FALSE}
+-- Average replacement cost of movies by rating
+SELECT rating, AVG(replacement_cost)
+FROM film
+GROUP BY rating;
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="dvdrental", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+SELECT rating, AVG(replacement_cost)
+FROM film
+GROUP BY rating
+                
+")
+```
+
+**Problem**: Obtain the customer ids of the top 5 spenders
+
+```{sql, eval = FALSE}
+-- Customer IDs of the top 5 spenders
+SELECT customer_id, SUM(amount)
+FROM payment
+GROUP BY customer_id
+ORDER BY SUM(amount) DESC
+LIMIT 5;
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="dvdrental", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+SELECT customer_id, SUM(amount)
+FROM payment
+GROUP BY customer_id
+ORDER BY SUM(amount) DESC
+LIMIT 5;
+                
+")
+```

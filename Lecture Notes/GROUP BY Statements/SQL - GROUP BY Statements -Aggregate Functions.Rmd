@@ -1,0 +1,169 @@
+---
+title: 'SQL: GROUP BY Statements - Aggregate Functions'
+author: "Sulman Khan"
+date: "`r format(Sys.time(), ' %B %d, %Y')`"
+output: 
+  html_document:
+    css: C:/Users/sulma/OneDrive/Desktop/Data Science/Machine Learning/gf_small_touches.css
+    highlight: tango
+    mathjax: default
+    theme: cerulean
+---
+
+```{r setup, cache = FALSE, echo = FALSE, message = FALSE, warning = FALSE, tidy = FALSE}
+require(knitr)
+options(width = 300 , scipen = 5)
+options(dplyr.print_max = 200)
+# options(width = 100, digits = 7)
+opts_chunk$set(message = FALSE, error = FALSE, warning = FALSE, 
+               collapse = TRUE, tidy = FALSE,
+               cache = TRUE, cache.path = '.cache/', 
+               fig.align = 'left', dpi = 100, fig.path = 'figures/Introductiontotextanalytics/')
+# opts_chunk$set(dev="png", 
+#                dev.args=list(type="cairo"),
+#                dpi=96)
+```
+---
+
+## SQL: GROUP BY Statements
+
+### Aggregate Functions
+
+The Aggregate functions combine all the rows into a single row of data.
+
+#### AVG
+The AVG function returns the combined average of rows.
+
+**Syntax**: 
+
+```{sql, eval = FALSE}
+-- AVG
+SELECT AVG(column_1) 
+FROM table_name;
+```
+
+
+**Example**: Obtain the average amount from the payment table
+
+```{sql, eval = FALSE}
+-- Obtain the average amount from the payment table
+SELECT AVG(amount)
+FROM payment;
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="dvdrental", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+SELECT AVG(amount)
+FROM payment
+                
+")
+```
+
+#### MIN
+The MIN function returns the minimum value of the rows. 
+
+**Syntax**: 
+
+```{sql, eval = FALSE}
+-- MIN
+SELECT MIN(column_1) 
+FROM table_name;
+```
+
+
+**Example**: Obtain the minimum amount from the payment table
+
+```{sql, eval = FALSE}
+-- Obtain the minimum amount from the payment table
+SELECT MIN(amount)
+FROM payment;
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="dvdrental", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+SELECT MIN(amount)
+FROM payment
+                
+")
+```
+
+#### MAX
+The MAX function returns the maximum value of the rows.
+
+**Syntax**: 
+
+```{sql, eval = FALSE}
+-- MAX
+SELECT MAX(column_1) 
+FROM table_name;
+```
+
+
+**Example**: Obtain the maximum amount from the payment table
+
+```{sql, eval = FALSE}
+-- Obtain the minimum amount from the payment table
+SELECT MAX(amount)
+FROM payment;
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="dvdrental", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+SELECT MAX(amount)
+FROM payment
+                
+")
+```
+
+
+#### SUM
+The SUM function returns the combined sum of rows. 
+
+**Syntax**: 
+
+```{sql, eval = FALSE}
+-- MAX
+SELECT MAX(column_1) 
+FROM table_name;
+```
+
+
+**Example**: Obtain the total amount from the payment table
+
+```{sql, eval = FALSE}
+-- Obtain the total amount from the payment table
+SELECT SUM(amount)
+FROM payment;
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="dvdrental", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+SELECT SUM(amount)
+FROM payment
+                
+")
+```
