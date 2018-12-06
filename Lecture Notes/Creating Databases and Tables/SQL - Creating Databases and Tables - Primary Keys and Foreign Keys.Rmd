@@ -1,0 +1,59 @@
+---
+title: 'SQL: Creating Databases and Tables - Primary Keys and Foreign Keys'
+author: "Sulman Khan"
+date: "`r format(Sys.time(), ' %B %d, %Y')`"
+output: 
+  html_document:
+    css: C:/Users/sulma/OneDrive/Desktop/Data Science/Machine Learning/gf_small_touches.css
+    highlight: tango
+    mathjax: default
+    theme: cerulean
+---
+
+```{r setup, cache = FALSE, echo = FALSE, message = FALSE, warning = FALSE, tidy = FALSE}
+require(knitr)
+options(width = 300 , scipen = 5)
+options(dplyr.print_max = 200)
+# options(width = 100, digits = 7)
+opts_chunk$set(message = FALSE, error = FALSE, warning = FALSE, 
+               collapse = TRUE, tidy = FALSE,
+               cache = TRUE, cache.path = '.cache/', 
+               fig.align = 'left', dpi = 100, fig.path = 'figures/Introductiontotextanalytics/')
+# opts_chunk$set(dev="png", 
+#                dev.args=list(type="cairo"),
+#                dpi=96)
+```
+---
+
+## SQL: Creating Databases and Tables - Primary Keys and Foreign Keys
+
+
+### Primary Keys
+
+A primary key is  a column or a group of columns that is used to identify a row uniquely in a table.
+
+* A table can have only one primary key.
+
+* When you add a primary key to a table, PostgreSQL creates a unique index on the column or a group of columns used to define the primary key
+
+**Syntax**
+
+```{SQL, eval = FALSE}
+-- Primary Key
+CREATE TABLE table_name (
+column_name data_type PRIMARY KEY,
+column_name data_type, ...);
+```
+
+### Foreign Keys
+
+A foreign key is a field or group of fields in a table that unique identifies a row in another table.
+
+* In other words, a foreign key is defined in a table that refers to the primary key of the other table.
+
+* The table that contains the foreign key is called *referencing table* or *child table*. And the table to which the foreign key references is called *referenced table* or *parent table*
+
+* A table can have multiple foreign keys depending on its relationships with other tables.
+
+* Define foreign keys through a foreign key constraint
+        

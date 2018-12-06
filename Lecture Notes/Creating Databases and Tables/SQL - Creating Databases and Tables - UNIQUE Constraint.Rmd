@@ -1,0 +1,120 @@
+---
+title: 'SQL: Creating Databases and Tables - UNIQUE Constraint'
+author: "Sulman Khan"
+date: "`r format(Sys.time(), ' %B %d, %Y')`"
+output: 
+  html_document:
+    css: C:/Users/sulma/OneDrive/Desktop/Data Science/Machine Learning/gf_small_touches.css
+    highlight: tango
+    mathjax: default
+    theme: cerulean
+---
+
+```{r setup, cache = FALSE, echo = FALSE, message = FALSE, warning = FALSE, tidy = FALSE}
+require(knitr)
+options(width = 300 , scipen = 5)
+options(dplyr.print_max = 200)
+# options(width = 100, digits = 7)
+opts_chunk$set(message = FALSE, error = FALSE, warning = FALSE, 
+               collapse = TRUE, tidy = FALSE,
+               cache = TRUE, cache.path = '.cache/', 
+               fig.align = 'left', dpi = 100, fig.path = 'figures/Introductiontotextanalytics/')
+# opts_chunk$set(dev="png", 
+#                dev.args=list(type="cairo"),
+#                dpi=96)
+```
+---
+
+## SQL: Creating Databases and Tables - UNIQUE Constraint
+
+
+### UNIQUE Constraint
+
+The NOT NULL constraint enforces that a value in a column is unique.
+
+
+
+
+**Example**: UNIQUE Constraint
+
+```{sql, eval = FALSE}
+-- Create Table with UNIQUE Constraints
+CREATE TABLE people(
+id serial PRIMARY KEY,
+first_name VARCHAR(50),
+email VARCHAR(100) UNIQUE
+);
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="learning", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+CREATE TABLE people(
+id serial PRIMARY KEY,
+first_name VARCHAR(50),
+email VARCHAR(100) UNIQUE
+)
+")
+```
+
+
+```{sql, eval = FALSE,one}
+-- INSERT
+INSERT INTO people(id,first_name,email) VALUES (1,'Joe' ,'joe@joe.com');
+
+```
+
+```{r, echo=FALSE, message=FALSE,two}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="learning", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+INSERT INTO people(id,first_name,email) VALUES (1,'Joe' ,'joe@joe.com')
+")
+```
+
+
+```{sql, eval = FALSE}
+-- SELECT
+SELECT * FROM people;
+
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="learning", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+SELECT * FROM people
+")
+```
+
+
+```{sql, eval = FALSE}
+-- INSERT, results in an error
+INSERT INTO people(id,first_name,email) VALUES (2,'Joseph' ,'joe@joe.com');
+
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="learning", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+INSERT INTO people(id,first_name,email) VALUES (2,'Joseph' ,'joe@joe.com')
+")
+```

@@ -1,0 +1,146 @@
+---
+title: 'SQL: Creating Databases and Tables - Delete'
+author: "Sulman Khan"
+date: "`r format(Sys.time(), ' %B %d, %Y')`"
+output: 
+  html_document:
+    css: C:/Users/sulma/OneDrive/Desktop/Data Science/Machine Learning/gf_small_touches.css
+    highlight: tango
+    mathjax: default
+    theme: cerulean
+---
+
+```{r setup, cache = FALSE, echo = FALSE, message = FALSE, warning = FALSE, tidy = FALSE}
+require(knitr)
+options(width = 300 , scipen = 5)
+options(dplyr.print_max = 200)
+# options(width = 100, digits = 7)
+opts_chunk$set(message = FALSE, error = FALSE, warning = FALSE, 
+               collapse = TRUE, tidy = FALSE,
+               cache = TRUE, cache.path = '.cache/', 
+               fig.align = 'left', dpi = 100, fig.path = 'figures/Introductiontotextanalytics/')
+# opts_chunk$set(dev="png", 
+#                dev.args=list(type="cairo"),
+#                dpi=96)
+```
+---
+
+## SQL: Creating Databases and Tables - DELETE
+
+
+### DELETE
+
+The DELEE statement deletes rows of a table. Also, returns the number of rows deleted.
+
+
+
+
+**Syntax**: 
+
+```{sql, eval = FALSE}
+-- DELETE
+DELETE FROM table
+WHERE condition;
+
+```
+
+
+**Example**: Delete Bing from link
+
+```{sql, eval = FALSE}
+-- Select
+SELECT * FROM link;
+
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="learning", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+SELECT * FROM LINK
+")
+```
+
+```{sql, eval = FALSE}
+-- DELETE Bing
+DELETE FROM link
+WHERE name LIKE 'B%';
+
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="learning", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+DELETE FROM link
+WHERE name LIKE 'B%';
+")
+```
+
+```{sql, eval = FALSE,2}
+-- Select
+SELECT * FROM link;
+
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="learning", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+SELECT * FROM LINK
+")
+```
+
+**Example**: Delete A from link
+
+```{sql, eval = FALSE}
+-- DELETE A
+DELETE FROM link
+WHERE name = 'A'
+RETURNING *;
+
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="learning", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+DELETE FROM link
+WHERE name = 'A'
+RETURNING *
+")
+```
+
+```{sql, eval = FALSE,3}
+-- Select
+SELECT * FROM link;
+
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="learning", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+SELECT * FROM LINK
+")
+```

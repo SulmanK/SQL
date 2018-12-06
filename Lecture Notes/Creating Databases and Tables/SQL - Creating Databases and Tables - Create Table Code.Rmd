@@ -1,0 +1,205 @@
+---
+title: 'SQL: Creating Databases and Tables - Create Table Code'
+author: "Sulman Khan"
+date: "`r format(Sys.time(), ' %B %d, %Y')`"
+output: 
+  html_document:
+    css: C:/Users/sulma/OneDrive/Desktop/Data Science/Machine Learning/gf_small_touches.css
+    highlight: tango
+    mathjax: default
+    theme: cerulean
+---
+
+```{r setup, cache = FALSE, echo = FALSE, message = FALSE, warning = FALSE, tidy = FALSE}
+require(knitr)
+options(width = 300 , scipen = 5)
+options(dplyr.print_max = 200)
+# options(width = 100, digits = 7)
+opts_chunk$set(message = FALSE, error = FALSE, warning = FALSE, 
+               collapse = TRUE, tidy = FALSE,
+               cache = TRUE, cache.path = '.cache/', 
+               fig.align = 'left', dpi = 100, fig.path = 'figures/Introductiontotextanalytics/')
+# opts_chunk$set(dev="png", 
+#                dev.args=list(type="cairo"),
+#                dpi=96)
+```
+---
+
+## SQL: Creating Databases and Tables - Create Table Code
+
+
+### CREATE TABLE
+
+The CREATE TABLE function creates a table in a database.
+
+Postgre SQL Column Constraints
+
+* NOT NULL - the value of the column cannot be NULL
+
+* UNIQUE - the value of the column must be unique across the whole table
+
+* Primary Key - this constraint is the combination of NOT Null and UNIQUE constraints
+
+* CHECK - enables to check a condition when you insert or update data
+
+* REFERENCES - constrains the value of the column that exists in a column in another table (Define the foreign key)
+
+
+PostgreSQL Table Constraints
+
+* Unique (column_list) - to force the value stored in the columns listed inside the parentheses to be unique
+
+* Primary Key (column_list) - to define the primary key that consists of multiple column
+
+* Check (condition) - to check a condition when inserting or updating data
+
+* References - to constrain the value store din the column that must exist in a column in another table
+
+
+
+**Syntax**: 
+
+```{sql, eval = FALSE}
+-- CREATE TABLE
+CREATE TABLE table_name
+(column_name TYPE column_constraint,
+table_constraint)
+INHERITS existing_table_name;
+```
+
+
+**Example**: Account table
+
+```{sql, eval = FALSE}
+-- Account table
+CREATE TABLE account(
+user_id serial PRIMARY KEY,
+username VARCHAR (50) UNIQUE NOT NULL,
+password VARCHAR (50) NOT NULL,
+email VARCHAR (355) UNIQUE NOT NULL,
+created_on TIMESTAMP NOT NULL,
+last_login TIMESTAMP
+);
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="learning", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+CREATE TABLE account(
+user_id serial PRIMARY KEY,
+username VARCHAR (50) UNIQUE NOT NULL,
+password VARCHAR (50) NOT NULL,
+email VARCHAR (355) UNIQUE NOT NULL,
+created_on TIMESTAMP NOT NULL,
+last_login TIMESTAMP
+)
+")
+```
+
+**Example**: Role table
+
+```{sql, eval = FALSE}
+-- Role table.
+CREATE TABLE role(
+role_id serial PRIMARY KEY,
+role_name VARCHAR (255) UNIQUE NOT NULL
+);
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="learning", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+CREATE TABLE role(
+role_id serial PRIMARY KEY,
+role_name VARCHAR (255) UNIQUE NOT NULL
+)
+")
+```
+
+**Example**: Account-role table
+
+```{sql, eval = FALSE}
+-- Account-role table
+CREATE TABLE account_role
+(
+  user_id integer NOT NULL,
+  role_id integer NOT NULL,
+  grant_date timestamp without time zone,
+  PRIMARY KEY (user_id, role_id),
+  CONSTRAINT account_role_role_id_fkey FOREIGN KEY (role_id)
+      REFERENCES role (role_id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT account_role_user_id_fkey FOREIGN KEY (user_id)
+      REFERENCES account (user_id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION
+);
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="learning", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+CREATE TABLE account_role
+(
+  user_id integer NOT NULL,
+  role_id integer NOT NULL,
+  grant_date timestamp without time zone,
+  PRIMARY KEY (user_id, role_id),
+  CONSTRAINT account_role_role_id_fkey FOREIGN KEY (role_id)
+      REFERENCES role (role_id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT account_role_user_id_fkey FOREIGN KEY (user_id)
+      REFERENCES account (user_id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION
+)
+")
+```
+
+### Challenge
+
+**Problem** : A customer's first name, last name,email,sign-up date, and number of minutes spent on the dvd rental site. You should also have some sort of id tracker for them. 
+
+```{sql, eval = FALSE}
+-- Role table.
+CREATE TABLE potential_leads(
+user_id serial PRIMARY KEY, 
+first_name VARCHAR (50) NOT NULL,
+last_name VARCHAR (50) NOT NULL,
+email VARCHAR (355) UNIQUE NOT NULL,
+sign_up_date TIMESTAMP NOT NULL,
+minutes_spent_on_dvd_rental_site integer NOT NULL
+);
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="dvdrental", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+CREATE TABLE potential_leads(
+user_id serial PRIMARY KEY, 
+first_name VARCHAR (50) NOT NULL,
+last_name VARCHAR (50) NOT NULL,
+email VARCHAR (355) UNIQUE NOT NULL,
+sign_up_date TIMESTAMP NOT NULL,
+minutes_spent_on_dvd_rental_site integer NOT NULL
+)
+")
+```

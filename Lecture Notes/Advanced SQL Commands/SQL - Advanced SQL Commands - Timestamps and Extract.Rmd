@@ -1,0 +1,95 @@
+---
+title: 'SQL: Advanced SQL Commands - Timestamps and Extract'
+author: "Sulman Khan"
+date: "`r format(Sys.time(), ' %B %d, %Y')`"
+output: 
+  html_document:
+    css: C:/Users/sulma/OneDrive/Desktop/Data Science/Machine Learning/gf_small_touches.css
+    highlight: tango
+    mathjax: default
+    theme: cerulean
+---
+
+```{r setup, cache = FALSE, echo = FALSE, message = FALSE, warning = FALSE, tidy = FALSE}
+require(knitr)
+options(width = 300 , scipen = 5)
+options(dplyr.print_max = 200)
+# options(width = 100, digits = 7)
+opts_chunk$set(message = FALSE, error = FALSE, warning = FALSE, 
+               collapse = TRUE, tidy = FALSE,
+               cache = TRUE, cache.path = '.cache/', 
+               fig.align = 'left', dpi = 100, fig.path = 'figures/Introductiontotextanalytics/')
+# opts_chunk$set(dev="png", 
+#                dev.args=list(type="cairo"),
+#                dpi=96)
+```
+---
+
+## SQL: JOINS - Advanced SQL Commands - Timestamps and Extract
+
+
+### Timestamps 
+
+Timestamp data types are used to retain information.
+
+### Extract
+
+The extract function extracts parts from a date. Look at [extract functions](https://www.postgresql.org/docs/8.1/functions-datetime.html) for a more detailed list on extract functions.
+
+**Syntax**: 
+
+```{sql, eval = FALSE}
+-- EXTRACT
+extract (unit_from_date)
+```
+
+
+**Example**: Examine the payment_date in the payment table
+
+```{sql, eval = FALSE}
+-- Examine the payment_date in the payment table. Extract the day from the payment date
+SELECT customer_id, extract(day from payment_date) AS day
+FROM
+payment
+limit 10;
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="dvdrental", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+SELECT customer_id, extract(day from payment_date) AS day
+FROM
+payment
+limit 10
+")
+```
+
+
+**Example**: What is the total amount of expenditure by the month?
+```{sql, eval = FALSE}
+-- What is the total amount of expenditure by the month?
+SELECT SUM(amount), extract(month from payment_date) AS month
+FROM payment
+GROUP BY month
+ORDER BY SUM(amount) DESC ;
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="dvdrental", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+SELECT SUM(amount), extract(month from payment_date) AS month
+FROM payment
+GROUP BY month
+ORDER BY SUM(amount) DESC
+")
+```

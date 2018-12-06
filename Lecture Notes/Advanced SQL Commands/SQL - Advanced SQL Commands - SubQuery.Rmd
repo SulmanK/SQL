@@ -1,0 +1,102 @@
+---
+title: 'SQL: Advanced SQL Commands - SubQuery'
+author: "Sulman Khan"
+date: "`r format(Sys.time(), ' %B %d, %Y')`"
+output: 
+  html_document:
+    css: C:/Users/sulma/OneDrive/Desktop/Data Science/Machine Learning/gf_small_touches.css
+    highlight: tango
+    mathjax: default
+    theme: cerulean
+---
+
+```{r setup, cache = FALSE, echo = FALSE, message = FALSE, warning = FALSE, tidy = FALSE}
+require(knitr)
+options(width = 300 , scipen = 5)
+options(dplyr.print_max = 200)
+# options(width = 100, digits = 7)
+opts_chunk$set(message = FALSE, error = FALSE, warning = FALSE, 
+               collapse = TRUE, tidy = FALSE,
+               cache = TRUE, cache.path = '.cache/', 
+               fig.align = 'left', dpi = 100, fig.path = 'figures/Introductiontotextanalytics/')
+# opts_chunk$set(dev="png", 
+#                dev.args=list(type="cairo"),
+#                dpi=96)
+```
+---
+
+## SQL: JOINS - Advanced SQL Commands - SubQuery
+
+
+### SubQuery
+
+A subquery is a query nested inside another query.
+
+**Syntax**: 
+
+```{sql, eval = FALSE}
+-- Subquery
+SELECT column_1, column_2
+FROM table_1
+WHERE column_1 > (SELECT column_2 FROM table_1);
+```
+
+
+**Example**: Select the film id, title, and rental rate from the film table while the rental rate is greater than the selected average of the rental rate from the film table.
+
+```{sql, eval = FALSE}
+-- Select the film id, title, and rental rate from the film table while the rental rate is greater than the selected average of the rental rate from the film table.
+SELECT film_id, title, rental_rate 
+FROM film
+WHERE
+rental_rate > (SELECT AVG(rental_rate) FROM film)
+limit 20;
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="dvdrental", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+SELECT film_id, title, rental_rate 
+FROM film
+WHERE
+rental_rate > (SELECT AVG(rental_rate) FROM film)
+limit 20
+")
+```
+
+**Example**: Select the film id from the inventory ID and observe the return date between 2005-05-29 and 2005-05-30. 
+
+```{sql, eval = FALSE}
+-- Select the film id and title from the inventory ID and observe the return date between 2005-05-29 and 2005-05-30. 
+SELECT film_id, title
+FROM film
+WHERE film_id IN (SELECT inventory.film_id
+FROM rental
+INNER JOIN inventory on inventory.inventory_id = rental.inventory_id
+WHERE
+return_date BETWEEN '2005-05-29' AND '2005-05-30')
+;
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="dvdrental", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+SELECT film_id, title
+FROM film
+WHERE film_id IN (SELECT inventory.film_id
+FROM rental
+INNER JOIN inventory on inventory.inventory_id = rental.inventory_id
+WHERE
+return_date BETWEEN '2005-05-29' AND '2005-05-30')
+")
+```

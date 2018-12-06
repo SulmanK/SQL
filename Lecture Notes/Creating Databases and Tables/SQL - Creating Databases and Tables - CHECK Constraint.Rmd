@@ -1,0 +1,106 @@
+---
+title: 'SQL: Creating Databases and Tables - CHECK Constraint'
+author: "Sulman Khan"
+date: "`r format(Sys.time(), ' %B %d, %Y')`"
+output: 
+  html_document:
+    css: C:/Users/sulma/OneDrive/Desktop/Data Science/Machine Learning/gf_small_touches.css
+    highlight: tango
+    mathjax: default
+    theme: cerulean
+---
+
+```{r setup, cache = FALSE, echo = FALSE, message = FALSE, warning = FALSE, tidy = FALSE}
+require(knitr)
+options(width = 300 , scipen = 5)
+options(dplyr.print_max = 200)
+# options(width = 100, digits = 7)
+opts_chunk$set(message = FALSE, error = FALSE, warning = FALSE, 
+               collapse = TRUE, tidy = FALSE,
+               cache = TRUE, cache.path = '.cache/', 
+               fig.align = 'left', dpi = 100, fig.path = 'figures/Introductiontotextanalytics/')
+# opts_chunk$set(dev="png", 
+#                dev.args=list(type="cairo"),
+#                dpi=96)
+```
+---
+
+## SQL: Creating Databases and Tables - CHECK Constraint
+
+
+### CHECK Constraint
+
+The CHECK constraint specifies if a value in a column must meet a specific requirement (Boolean expression).
+
+
+
+
+**Example**: Check Constraint
+
+```{sql, eval = FALSE}
+-- Create Table with CHECK Constraints
+CREATE TABLE new_users(
+id serial PRIMARY KEY,
+first_name VARCHAR(50), 
+birth_date DATE CHECK(birth_date > '1900-01-01'),
+join_date DATE CHECK (join_date > birth_date),
+salary integer CHECK(salary > 0)
+);
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="learning", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+CREATE TABLE new_users(
+id serial PRIMARY KEY,
+first_name VARCHAR(50), 
+birth_date DATE CHECK(birth_date > '1900-01-01'),
+join_date DATE CHECK (join_date > birth_date),
+salary integer CHECK(salary > 0)
+
+)
+")
+```
+
+
+```{sql, eval = FALSE,one}
+-- Select
+SELECT * FROM new_users;
+
+```
+
+```{r, echo=FALSE, message=FALSE,two}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="learning", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+SELECT * FROM new_users
+")
+```
+
+```{sql, eval = FALSE,five}
+-- INSERT, Should result in an error
+INSERT INTO new_users(first_name,birth_date,join_date,salary)
+VALUES ('Joe', '1980-02-02', '1990-04-04', -10);
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="learning", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+INSERT INTO new_users(first_name,birth_date,join_date,salary)
+VALUES ('Joe', '1980-02-02', '1990-04-04', -10)
+")
+```

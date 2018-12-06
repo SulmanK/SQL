@@ -1,0 +1,91 @@
+---
+title: 'SQL: Creating Databases and Tables - Data Types'
+author: "Sulman Khan"
+date: "`r format(Sys.time(), ' %B %d, %Y')`"
+output: 
+  html_document:
+    css: C:/Users/sulma/OneDrive/Desktop/Data Science/Machine Learning/gf_small_touches.css
+    highlight: tango
+    mathjax: default
+    theme: cerulean
+---
+
+```{r setup, cache = FALSE, echo = FALSE, message = FALSE, warning = FALSE, tidy = FALSE}
+require(knitr)
+options(width = 300 , scipen = 5)
+options(dplyr.print_max = 200)
+# options(width = 100, digits = 7)
+opts_chunk$set(message = FALSE, error = FALSE, warning = FALSE, 
+               collapse = TRUE, tidy = FALSE,
+               cache = TRUE, cache.path = '.cache/', 
+               fig.align = 'left', dpi = 100, fig.path = 'figures/Introductiontotextanalytics/')
+# opts_chunk$set(dev="png", 
+#                dev.args=list(type="cairo"),
+#                dpi=96)
+```
+---
+
+## SQL: Creating Databases and Tables - Data Types
+
+
+### Data Types
+
+PostgreSQL supports the following data types:
+
+* Boolean
+
+* Character
+
+* Number
+
+* Temporal - date and time-related data types
+
+* Special types
+
+* Array
+
+#### Boolean
+
+A Boolean data type can hold one of two possible values: true (t) or false (f). In case the value is unknown, the NULL (space) value is used.
+
+Use **boolean** or **bool** keyword when you declare a column that has Boolean data type.
+
+* True = 1, yes, y, t, true
+
+* False = 0, no, n, f, false
+
+#### Character
+
+* A single character: char
+
+* Fixed-length character strings: char(n) 
+
+If you insert a string that is shorter than the length of the column, PostgreSQL will pad space. if you insert a string that is longer than the length of the column, PostgreSQL will issue an error.
+
+* Variable-length character strings: varchar(n) 
+
+You can store up to n characters with variable-length character strings. PostgreSQL does not pad spaces when the stored string is shorter than the length of the column.
+
+#### Number
+
+Two distinct types of numbers: 
+
+* Integers 
+      + Small integer (smallint) is a 2-byte signed integer 
+      + Integer (int) is a 4-byte integer.
+* Floating-point numbers: float(n) is a floating-point number whose precision, at least, n, unto a maximum of 8 bytes 
+      + real or float 8 is a double-precision (8-byte) floating-point number 
+      + numeric or numeric(p,s) is a real number with p digits with s number after the decimal point.
+
+#### Temporal
+
+The temporal data types store date and time-related data
+* date stores date data
+
+* time stores time data
+
+* timestamp stores date and time
+
+* interval stores the difference in timestamps
+
+* timestamptz store both timestamp and timezone data

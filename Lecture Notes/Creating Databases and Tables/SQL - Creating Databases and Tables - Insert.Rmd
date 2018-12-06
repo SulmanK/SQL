@@ -1,0 +1,225 @@
+---
+title: 'SQL: Creating Databases and Tables - Insert'
+author: "Sulman Khan"
+date: "`r format(Sys.time(), ' %B %d, %Y')`"
+output: 
+  html_document:
+    css: C:/Users/sulma/OneDrive/Desktop/Data Science/Machine Learning/gf_small_touches.css
+    highlight: tango
+    mathjax: default
+    theme: cerulean
+---
+
+```{r setup, cache = FALSE, echo = FALSE, message = FALSE, warning = FALSE, tidy = FALSE}
+require(knitr)
+options(width = 300 , scipen = 5)
+options(dplyr.print_max = 200)
+# options(width = 100, digits = 7)
+opts_chunk$set(message = FALSE, error = FALSE, warning = FALSE, 
+               collapse = TRUE, tidy = FALSE,
+               cache = TRUE, cache.path = '.cache/', 
+               fig.align = 'left', dpi = 100, fig.path = 'figures/Introductiontotextanalytics/')
+# opts_chunk$set(dev="png", 
+#                dev.args=list(type="cairo"),
+#                dpi=96)
+```
+---
+
+## SQL: Creating Databases and Tables - Insert
+
+
+### INSERT
+
+When you create a new table, it does not have any data. The first thing you often do is to insert new rows into the table. 
+
+SQL provides the INSERT statement that allows you to insert one or more rows into a table at a time
+
+
+
+
+**Syntax**: 
+
+```{sql, eval = FALSE}
+-- INSERT 
+INSERT INTO table(column1, column2, ...)
+VALUES (value1, value2, ...);
+-- INSERT data that comes from another table
+INSERT INTO table
+SELECT column1, column2, ...
+FROM another_table
+WHERE condition;
+```
+
+
+**Example**: Link
+
+```{sql, eval = FALSE}
+-- Create Table
+CREATE TABLE link(
+ID serial PRIMARY KEY,
+url VARCHAR(255) NOT NULL,
+name VARCHAR(255) NOT NULL,
+description VARCHAR(255),
+rel VARCHAR (50)
+);
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="learning", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+CREATE TABLE link(
+ID serial PRIMARY KEY,
+url VARCHAR(255) NOT NULL,
+name VARCHAR(255) NOT NULL,
+description VARCHAR(255),
+rel VARCHAR (50)
+)
+")
+```
+
+
+```{sql, eval = FALSE}
+-- Insert Google
+INSERT INTO link(url,name)
+VALUES ('www.google.com', 'Google');
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="learning", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+INSERT INTO link(url,name)
+VALUES ('www.google.com', 'Google')
+")
+```
+
+**Example**: Link #2 Insert
+
+```{sql, eval = FALSE}
+-- INSERT Yahoo
+INSERT INTO link(url,name)
+VALUES ('www.yahoo.com', 'Yahoo');
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="learning", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+INSERT INTO link(url,name)
+VALUES ('www.yahoo.com', 'Yahoo')
+")
+```
+
+**Example**: Link #3 Insert Multiple Values
+
+```{sql, eval = FALSE}
+-- INSERT multiple values
+INSERT INTO link(url,name)
+VALUES ('www.bing.com', 'Bing'), ('www.amazon.com', 'Amazon');
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="learning", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+INSERT INTO link(url,name)
+VALUES ('www.bing.com', 'Bing'), ('www.amazon.com', 'Amazon')
+")
+```
+
+
+```{sql, eval = FALSE}
+-- Select
+SELECT * FROM link;
+
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="learning", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+SELECT * FROM link
+")
+```
+
+
+**Example**: Insert another table
+
+```{sql, eval = FALSE}
+-- Create Table similar to link
+CREATE TABLE link_copy (LIKE link);
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="learning", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+CREATE TABLE link_copy (LIKE link)
+")
+```
+
+```{sql, eval = FALSE}
+-- Insert into
+INSERT INTO link_copy
+SELECT * FROM link
+WHERE name = 'Bing';
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="learning", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+INSERT INTO link_copy
+SELECT * FROM link
+WHERE name = 'Bing'
+")
+```
+
+```{sql, eval = FALSE}
+-- Select
+SELECT *
+FROM link_copy;
+
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="learning", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+SELECT *
+FROM link_copy
+")
+```

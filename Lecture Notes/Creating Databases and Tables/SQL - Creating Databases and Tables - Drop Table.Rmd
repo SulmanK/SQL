@@ -1,0 +1,139 @@
+---
+title: 'SQL: Creating Databases and Tables - Drop Table'
+author: "Sulman Khan"
+date: "`r format(Sys.time(), ' %B %d, %Y')`"
+output: 
+  html_document:
+    css: C:/Users/sulma/OneDrive/Desktop/Data Science/Machine Learning/gf_small_touches.css
+    highlight: tango
+    mathjax: default
+    theme: cerulean
+---
+
+```{r setup, cache = FALSE, echo = FALSE, message = FALSE, warning = FALSE, tidy = FALSE}
+require(knitr)
+options(width = 300 , scipen = 5)
+options(dplyr.print_max = 200)
+# options(width = 100, digits = 7)
+opts_chunk$set(message = FALSE, error = FALSE, warning = FALSE, 
+               collapse = TRUE, tidy = FALSE,
+               cache = TRUE, cache.path = '.cache/', 
+               fig.align = 'left', dpi = 100, fig.path = 'figures/Introductiontotextanalytics/')
+# opts_chunk$set(dev="png", 
+#                dev.args=list(type="cairo"),
+#                dpi=96)
+```
+---
+
+## SQL: Creating Databases and Tables - DROP TABLE
+
+
+### DROP TABLE
+
+The DROP TABLE statement removes an existing table from the database.
+
+
+**Syntax**: 
+
+```{sql, eval = FALSE}
+-- DROP TABLE
+DROP TABLE [IF EXISTS] table_name
+
+```
+
+
+**Example**: DROP Table
+
+```{sql, eval = FALSE}
+-- Create 
+CREATE TABLE test_two(
+test_id serial PRIMARY KEY);
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="learning", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+CREATE TABLE test_two(
+test_id serial PRIMARY KEY)
+")
+```
+
+
+```{sql, eval = FALSE,one}
+-- Select
+SELECT * FROM test_two;
+
+```
+
+```{r, echo=FALSE, message=FALSE,two}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="learning", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+SELECT * FROM test_two
+")
+```
+
+```{sql, eval = FALSE,1}
+-- DROP Table
+DROP TABLE test_two;
+
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="learning", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+DROP TABLE test_two;
+")
+```
+
+```{sql, eval = FALSE,four}
+-- Select
+SELECT * FROM test_two;
+
+```
+
+```{r, echo=FALSE, message=FALSE,three}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="learning", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+SELECT * FROM test_two
+")
+```
+
+
+```{sql, eval = FALSE,exists}
+-- DROP Table with exists
+DROP TABLE IF EXISTS test_two;
+
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="learning", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+DROP TABLE IF EXISTS test_two;
+")
+```
+

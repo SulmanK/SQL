@@ -1,0 +1,190 @@
+---
+title: 'SQL: Creating Databases and Tables - Alter Table'
+author: "Sulman Khan"
+date: "`r format(Sys.time(), ' %B %d, %Y')`"
+output: 
+  html_document:
+    css: C:/Users/sulma/OneDrive/Desktop/Data Science/Machine Learning/gf_small_touches.css
+    highlight: tango
+    mathjax: default
+    theme: cerulean
+---
+
+```{r setup, cache = FALSE, echo = FALSE, message = FALSE, warning = FALSE, tidy = FALSE}
+require(knitr)
+options(width = 300 , scipen = 5)
+options(dplyr.print_max = 200)
+# options(width = 100, digits = 7)
+opts_chunk$set(message = FALSE, error = FALSE, warning = FALSE, 
+               collapse = TRUE, tidy = FALSE,
+               cache = TRUE, cache.path = '.cache/', 
+               fig.align = 'left', dpi = 100, fig.path = 'figures/Introductiontotextanalytics/')
+# opts_chunk$set(dev="png", 
+#                dev.args=list(type="cairo"),
+#                dpi=96)
+```
+---
+
+## SQL: Creating Databases and Tables - ALTER TABLE
+
+
+### ALTER TABLE
+
+The ALTER TABLE statement changes an existing table's structure.
+
+**Action Statements**:
+
+* Add column
+
+* Drop Column
+
+* Rename Column
+
+* Add Constraint
+
+* Rename to
+
+
+**Syntax**: 
+
+```{sql, eval = FALSE}
+-- ALTER TABLE
+ALTER TABLE table_name action;
+
+```
+
+
+**Example**: Alter Table
+
+```{sql, eval = FALSE}
+-- DROP Table
+DROP TABLE IF EXISTS link;
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="learning", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+DROP TABLE IF EXISTS link
+")
+```
+
+```{sql, eval = FALSE}
+-- CREATE LINK
+CREATE TABLE link(
+link_id serial PRIMARY KEY,
+title VARCHAR (512) NOT NULL,
+url VARCHAR(1024) NOT NULL UNIQUE
+);
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="learning", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+CREATE TABLE link(
+link_id serial PRIMARY KEY,
+title VARCHAR (512) NOT NULL,
+url VARCHAR(1024) NOT NULL UNIQUE
+)
+")
+```
+
+```{sql, eval = FALSE,1}
+-- Select
+SELECT * FROM link;
+
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="learning", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+SELECT * FROM link
+")
+```
+
+```{sql, eval = FALSE, 2}
+-- ALTER
+ALTER TABLE link ADD COLUMN active boolean;
+
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="learning", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+ALTER TABLE link ADD COLUMN active boolean
+")
+```
+
+```{sql, eval = FALSE,3}
+-- Select
+SELECT * FROM link;
+
+```
+
+```{r, echo=FALSE, message=FALSE, }
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="learning", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+SELECT * FROM link
+")
+```
+
+**Example**: Rename link to url_table
+
+```{sql, eval = FALSE}
+-- ALTER Table to url_table
+ALTER TABLE link RENAME TO url_table;
+
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="learning", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+ALTER TABLE link RENAME TO url_table
+")
+```
+
+```{sql, eval = FALSE}
+-- SELECT
+SELECT * FROM url_table;
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="learning", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+SELECT * FROM url_table
+")
+```

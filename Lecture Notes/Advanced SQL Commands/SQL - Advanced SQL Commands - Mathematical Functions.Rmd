@@ -1,0 +1,88 @@
+---
+title: 'SQL: Advanced SQL Commands - Mathematical Functions'
+author: "Sulman Khan"
+date: "`r format(Sys.time(), ' %B %d, %Y')`"
+output: 
+  html_document:
+    css: C:/Users/sulma/OneDrive/Desktop/Data Science/Machine Learning/gf_small_touches.css
+    highlight: tango
+    mathjax: default
+    theme: cerulean
+---
+
+```{r setup, cache = FALSE, echo = FALSE, message = FALSE, warning = FALSE, tidy = FALSE}
+require(knitr)
+options(width = 300 , scipen = 5)
+options(dplyr.print_max = 200)
+# options(width = 100, digits = 7)
+opts_chunk$set(message = FALSE, error = FALSE, warning = FALSE, 
+               collapse = TRUE, tidy = FALSE,
+               cache = TRUE, cache.path = '.cache/', 
+               fig.align = 'left', dpi = 100, fig.path = 'figures/Introductiontotextanalytics/')
+# opts_chunk$set(dev="png", 
+#                dev.args=list(type="cairo"),
+#                dpi=96)
+```
+---
+
+## SQL: JOINS - Advanced SQL Commands - Mathematical Functions
+
+
+### Mathematical Functions
+
+The mathematical functions are used to manipulate the dataset. More information on [mathematical functions](https://www.postgresql.org/docs/current/functions-math.html)! 
+
+**Syntax**: 
+
+```{sql, eval = FALSE}
+-- Mathematical Function
+SELECT column_1 + column_2 as new_column
+FROM table_1;
+```
+
+
+**Example**: Create a new column by adding the customer_id and rental_id
+
+```{sql, eval = FALSE}
+-- Create a new column by adding the customer_id and rental_id
+SELECT customer_id + rental_id as sum_id
+FROM payment
+limit 20;
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="dvdrental", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+SELECT customer_id + rental_id as sum_id
+FROM payment
+limit 20
+")
+```
+
+**Example**: Create a new column by multiplying the customer_id and rental_id
+
+```{sql, eval = FALSE}
+-- Create a new column by multiplying the customer_id and rental_id
+SELECT customer_id * rental_id as sum_id
+FROM payment
+limit 20;
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="dvdrental", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+SELECT customer_id * rental_id as sum_id
+FROM payment
+limit 20
+")
+```

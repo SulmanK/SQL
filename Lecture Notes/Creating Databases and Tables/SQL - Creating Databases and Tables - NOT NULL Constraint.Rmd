@@ -1,0 +1,116 @@
+---
+title: 'SQL: Creating Databases and Tables - NOT NULL Constraint'
+author: "Sulman Khan"
+date: "`r format(Sys.time(), ' %B %d, %Y')`"
+output: 
+  html_document:
+    css: C:/Users/sulma/OneDrive/Desktop/Data Science/Machine Learning/gf_small_touches.css
+    highlight: tango
+    mathjax: default
+    theme: cerulean
+---
+
+```{r setup, cache = FALSE, echo = FALSE, message = FALSE, warning = FALSE, tidy = FALSE}
+require(knitr)
+options(width = 300 , scipen = 5)
+options(dplyr.print_max = 200)
+# options(width = 100, digits = 7)
+opts_chunk$set(message = FALSE, error = FALSE, warning = FALSE, 
+               collapse = TRUE, tidy = FALSE,
+               cache = TRUE, cache.path = '.cache/', 
+               fig.align = 'left', dpi = 100, fig.path = 'figures/Introductiontotextanalytics/')
+# opts_chunk$set(dev="png", 
+#                dev.args=list(type="cairo"),
+#                dpi=96)
+```
+---
+
+## SQL: Creating Databases and Tables - NOT NULL Constraint
+
+
+### NOT NULL Constraint
+
+The NOT NULL constraint enforces that a column must not accept NULL values.
+
+
+
+
+**Example**: NOT NULL Constraint
+
+```{sql, eval = FALSE}
+-- Create Table with NOT NULL Constraints
+CREATE TABLE learn_null (
+first_name VARCHAR (50),
+sales integer NOT NULL
+);
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="learning", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+CREATE TABLE learn_null (
+first_name VARCHAR (50),
+sales integer NOT NULL
+)
+")
+```
+
+
+```{sql, eval = FALSE,one}
+-- INSERT, should result in an error
+INSERT INTO learn_null(first_name) VALUES ('John');
+
+```
+
+```{r, echo=FALSE, message=FALSE,two}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="learning", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+INSERT INTO learn_null(first_name) VALUES ('John')
+")
+```
+
+```{sql, eval = FALSE}
+-- INSERT, correct
+INSERT INTO learn_null(first_name, sales) VALUES ('John', 12);
+
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="learning", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+INSERT INTO learn_null(first_name, sales) VALUES ('John', 12)
+")
+```
+
+```{sql, eval = FALSE}
+-- SELECT
+SELECT * FROM learn_null;
+
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="learning", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+SELECT * FROM learn_null
+")
+```
