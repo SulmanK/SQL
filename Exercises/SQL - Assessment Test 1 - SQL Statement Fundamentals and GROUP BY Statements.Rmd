@@ -1,0 +1,122 @@
+---
+title: 'SQL: Assessment Test 1 - SQL Statement Fundamentals and GROUP BY Statements'
+author: "Sulman Khan"
+date: "`r format(Sys.time(), ' %B %d, %Y')`"
+output: 
+  html_document:
+    css: C:/Users/sulma/OneDrive/Desktop/Data Science/Machine Learning/gf_small_touches.css
+    highlight: tango
+    mathjax: default
+    theme: cerulean
+---
+
+```{r setup, cache = FALSE, echo = FALSE, message = FALSE, warning = FALSE, tidy = FALSE}
+require(knitr)
+options(width = 300 , scipen = 5)
+options(dplyr.print_max = 200)
+# options(width = 100, digits = 7)
+opts_chunk$set(message = FALSE, error = FALSE, warning = FALSE, 
+               collapse = TRUE, tidy = FALSE,
+               cache = TRUE, cache.path = '.cache/', 
+               fig.align = 'left', dpi = 100, fig.path = 'figures/Introductiontotextanalytics/')
+# opts_chunk$set(dev="png", 
+#                dev.args=list(type="cairo"),
+#                dpi=96)
+```
+---
+
+## SQL: Assessment Test 1 - SQL Statement Fundamentals and GROUP BY Statements
+
+
+### Problem 1
+
+**Problem**: Return the customer IDs of customers who have spent at least $110 with the staff member who has an ID of 2.
+
+```{sql, eval = FALSE}
+-- Return the customer IDs of customers who have spent at least $110 with the staff member who has an ID of 2.
+SELECT staff_id ,customer_id , SUM(amount)
+FROM payment
+WHERE staff_id = 2
+GROUP BY customer_id, staff_id
+HAVING SUM(amount) >= 110;
+-- Solution TWO
+SELECT customer_id, SUM(amount)
+FROM payment
+WHERE staff_id = 2
+GROUP BY customer_ID
+HAVING SUM(amount) >= 110; 
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="dvdrental", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+SELECT staff_id ,customer_id , SUM(amount)
+FROM payment
+WHERE staff_id = 2
+GROUP BY customer_id, staff_id
+HAVING SUM(amount) >= 110
+                
+")
+```
+
+### Problem 2
+
+**Problem**: How many films begin with the letter J?
+
+```{sql, eval = FALSE}
+-- Count the number of films that begin with the letter J
+SELECT COUNT(title)
+FROM film
+WHERE title LIKE 'J%';
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="dvdrental", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+SELECT COUNT(title)
+FROM film
+WHERE title LIKE 'J%'
+                
+")
+```
+
+
+### Problem 3
+
+**Problem**: What customer has the highest customer ID number whose name starts with an 'E' and has an address ID lower than 500?
+
+```{sql, eval = FALSE}
+-- What customer has the highest customer ID number whose name starts with an 'E' and has an address ID lower than 500?
+SELECT first_name, last_name, customer_id 
+FROM customer
+WHERE first_name LIKE 'E%' AND address_id < 500
+ORDER BY customer_id DESC
+LIMIT 1;
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="dvdrental", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+SELECT first_name, last_name, customer_id 
+FROM customer
+WHERE first_name LIKE 'E%' AND address_id < 500
+ORDER BY customer_id DESC
+LIMIT 1
+                
+")
+```

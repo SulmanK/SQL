@@ -1,0 +1,185 @@
+---
+title: 'SQL: Statement Fundamentals - General Challenges'
+author: "Sulman Khan"
+date: "`r format(Sys.time(), ' %B %d, %Y')`"
+output: 
+  html_document:
+    css: C:/Users/sulma/OneDrive/Desktop/Data Science/Machine Learning/gf_small_touches.css
+    highlight: tango
+    mathjax: default
+    theme: cerulean
+---
+
+```{r setup, cache = FALSE, echo = FALSE, message = FALSE, warning = FALSE, tidy = FALSE}
+require(knitr)
+options(width = 300 , scipen = 5)
+options(dplyr.print_max = 200)
+# options(width = 100, digits = 7)
+opts_chunk$set(message = FALSE, error = FALSE, warning = FALSE, 
+               collapse = TRUE, tidy = FALSE,
+               cache = TRUE, cache.path = '.cache/', 
+               fig.align = 'left', dpi = 100, fig.path = 'figures/Introductiontotextanalytics/')
+# opts_chunk$set(dev="png", 
+#                dev.args=list(type="cairo"),
+#                dpi=96)
+```
+---
+
+## SQL: Statement Fundamentals
+
+### General Challenges
+
+
+**Problem**: How many payment transactions were greater than $5.00?
+
+```{sql, eval = FALSE}
+--Return the number of payment transactions were greater than $5.00
+SELECT COUNT(amount)
+FROM payment
+WHERE amount > 5;
+```
+
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="dvdrental", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,
+"
+SELECT COUNT(amount)
+FROM payment
+WHERE amount > 5
+")
+```
+
+
+**Problem**: How many actors have a first name that starts with the letter P
+
+```{sql, eval = FALSE}
+--Return the number of actors that have a first name which starts with the letter P
+SELECT COUNT(actor)
+FROM actor
+WHERE first_name LIKE 'P%';
+```
+
+
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="dvdrental", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,
+"
+SELECT COUNT(actor)
+FROM actor
+WHERE first_name LIKE 'P%'
+")
+```
+
+**Problem**: How many unique districts are our customers from?
+
+```{sql, eval = FALSE}
+--Return the number of unique districts that are our customers from
+SELECT COUNT(DISTINCT(district))
+FROM address;
+```
+
+
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="dvdrental", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,
+"
+SELECT COUNT(DISTINCT(district))
+FROM address
+")
+```
+
+**Problem**: Retrieve the list of names for those distinct districts from the previous question.
+
+```{sql, eval = FALSE}
+--Return the names of unique districts that are our customers from
+SELECT DISTINCT district
+FROM address;
+```
+
+
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="dvdrental", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,
+"
+SELECT DISTINCT district
+FROM address
+")
+```
+
+**Problem**: How many films have a rating of R and a replacement cost between \$5 and \$15?
+
+```{sql, eval = FALSE}
+--Return the number of films have a rating of R and a replacement cost between $5 and $15
+SELECT COUNT(*)
+FROM film
+WHERE rating = 'R' AND replacement_cost BETWEEN 5 AND 15;
+```
+
+
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="dvdrental", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,
+"
+SELECT COUNT(*)
+FROM film
+WHERE rating = 'R' AND replacement_cost BETWEEN 5 AND 15
+")
+```
+
+
+**Problem**: How many films have the word Truman somewhere in the title?
+
+```{sql, eval = FALSE}
+--Return the number of films have the word Truman somewhere in the title
+SELECT COUNT(*)
+FROM film
+WHERE title LIKE '%Truman%';
+
+```
+
+
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="dvdrental", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,
+"
+SELECT COUNT(*)
+FROM film
+WHERE title LIKE '%Truman%'
+")
+```

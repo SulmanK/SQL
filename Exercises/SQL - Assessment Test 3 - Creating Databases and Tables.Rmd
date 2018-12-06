@@ -1,0 +1,166 @@
+---
+title: 'SQL: Assessment Test 3 - Creating Databases and Tables'
+author: "Sulman Khan"
+date: "`r format(Sys.time(), ' %B %d, %Y')`"
+output: 
+  html_document:
+    css: C:/Users/sulma/OneDrive/Desktop/Data Science/Machine Learning/gf_small_touches.css
+    highlight: tango
+    mathjax: default
+    theme: cerulean
+---
+
+```{r setup, cache = FALSE, echo = FALSE, message = FALSE, warning = FALSE, tidy = FALSE}
+require(knitr)
+options(width = 300 , scipen = 5)
+options(dplyr.print_max = 200)
+# options(width = 100, digits = 7)
+opts_chunk$set(message = FALSE, error = FALSE, warning = FALSE, 
+               collapse = TRUE, tidy = FALSE,
+               cache = TRUE, cache.path = '.cache/', 
+               fig.align = 'left', dpi = 100, fig.path = 'figures/Introductiontotextanalytics/')
+# opts_chunk$set(dev="png", 
+#                dev.args=list(type="cairo"),
+#                dpi=96)
+```
+---
+
+## SQL: Assessment Test 3 - Creating Databases and Tables
+
+
+### Problem 
+
+**Problem**: 
+
+Create a new database called "School" this database should have two tables: teachers and students.
+
+The students table should have columns for student_id, first_name,last_name, homeroom_number, phone,email, and graduation year.
+
+The teachers table should have columns for teacher_id, first_name, last_name, homeroom_number, department, email, and phone.
+
+The constraints are mostly up to you, but your table constraints do have to consider the following:
+
+* We must have a phone number to contact students in case of an emergency.
+* We must have ids as the primary key of the tables
+* Phone numbers and emails must be unique to the individual.
+
+Once you've made the tables, insert a student named Mark Watney (student_id=1) who has a phone number of 777-555-1234 and doesn't have an email. He graduates in 2035 and has 5 as a homeroom number.
+
+Then insert a teacher names Jonas Salk (teacher_id = 1) who as a homeroom number of 5 and is from the Biology department. His contact info is: jsalk@school.org and a phone number of 777-555-4321.
+
+
+
+
+
+```{sql, eval = FALSE}
+-- Generate students
+CREATE TABLE students(
+student_id serial PRIMARY KEY,
+first_name VARCHAR(50) NOT NULL,
+last_name VARCHAR(50) NOT NULL,
+homeroom_number integer,
+phone VARCHAR(255) NOT NULL UNIQUE,
+email VARCHAR(50) UNIQUE,
+grad_year integer
+);
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="education", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+CREATE TABLE students(
+student_id serial PRIMARY KEY,
+first_name VARCHAR(50) NOT NULL,
+last_name VARCHAR(50) NOT NULL,
+homeroom_number integer,
+phone VARCHAR(255) NOT NULL UNIQUE,
+email VARCHAR(50) UNIQUE,
+grad_year integer
+)
+                
+")
+```
+
+```{sql, eval = FALSE}
+-- Generate teachers
+CREATE TABLE teachers(
+teacher_id serial PRIMARY KEY,
+first_name VARCHAR(50) NOT NULL,
+last_name VARCHAR(50) NOT NULL,
+homeroom_number integer,
+department VARCHAR(50),
+phone VARCHAR(255) UNIQUE,
+email VARCHAR(50) UNIQUE
+);
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="education", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+CREATE TABLE teachers(
+teacher_id serial PRIMARY KEY,
+first_name VARCHAR(50) NOT NULL,
+last_name VARCHAR(50) NOT NULL,
+homeroom_number integer,
+department VARCHAR(50),
+phone VARCHAR(255) UNIQUE,
+email VARCHAR(50) UNIQUE
+)
+                
+")
+```
+
+
+
+```{sql, eval = FALSE}
+-- INSERT students
+INSERT INTO students (student_id, first_name, last_name, homeroom_number, phone, grad_year)
+VALUES (1, 'Mark', 'Watney', 5, '777-555-1234', 2035);
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="education", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+INSERT INTO students (student_id, first_name, last_name, homeroom_number, phone, grad_year)
+VALUES (1, 'Mark', 'Watney', 5, '777-555-1234', 2035)
+                
+")
+```
+
+
+```{sql, eval = FALSE}
+-- INSERT teachers
+INSERT INTO teachers (teacher_id, first_name, last_name, homeroom_number, department, phone,  email)
+VALUES (1, 'Jonas', 'Salk', 5, 'Biology',  '777-555-4321', 'jsalk@school.org');
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="education", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+INSERT INTO students (student_id, first_name, last_name, homeroom_number, phone, grad_year)
+VALUES (1, 'Mark', 'Watney', 5, '777-555-1234', 2035)
+                
+")
+```
+
+
