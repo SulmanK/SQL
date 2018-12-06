@@ -1,0 +1,117 @@
+---
+title: 'SQL: Statement Fundamentals - LIKE'
+author: "Sulman Khan"
+date: "`r format(Sys.time(), ' %B %d, %Y')`"
+output: 
+  html_document:
+    css: C:/Users/sulma/OneDrive/Desktop/Data Science/Machine Learning/gf_small_touches.css
+    highlight: tango
+    mathjax: default
+    theme: cerulean
+---
+
+```{r setup, cache = FALSE, echo = FALSE, message = FALSE, warning = FALSE, tidy = FALSE}
+require(knitr)
+options(width = 300 , scipen = 5)
+options(dplyr.print_max = 200)
+# options(width = 100, digits = 7)
+opts_chunk$set(message = FALSE, error = FALSE, warning = FALSE, 
+               collapse = TRUE, tidy = FALSE,
+               cache = TRUE, cache.path = '.cache/', 
+               fig.align = 'left', dpi = 100, fig.path = 'figures/Introductiontotextanalytics/')
+# opts_chunk$set(dev="png", 
+#                dev.args=list(type="cairo"),
+#                dpi=96)
+```
+---
+
+## SQL: Statement Fundamentals
+
+
+### LIKE
+
+LIKE operator returns a query that is similar to a set description.
+
+**Syntax**: 
+
+```{sql, eval = FALSE}
+--LIKE
+SELECT column_1, column_2
+FROM table_name
+WHERE column_1 LIKE 'statement%';
+```
+
+
+**Example**: How do you find the exact customer that the store manager is asking for?
+
+```{sql, eval = FALSE}
+--Return the first name and last name using the LIKE operator of a person known as "JEN"
+SELECT first_name, last_name
+FROM customer
+WHERE first_name LIKE 'Jen%';
+```
+
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="dvdrental", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,
+"
+SELECT first_name, last_name
+FROM customer
+WHERE first_name LIKE 'Jen%'
+")
+```
+
+**Example**: How do you find the exact customer that the store manager is asking for?
+
+```{sql, eval = FALSE}
+--Return the first name and last name using the LIKE operator of a person known as "JEN"
+SELECT first_name, last_name
+FROM customer
+WHERE first_name LIKE 'Jen%';
+```
+
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="dvdrental", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,
+"
+SELECT first_name, last_name
+FROM customer
+WHERE first_name LIKE 'Jen%'
+")
+```
+
+```{sql, eval = FALSE}
+--Return the first name and last name using the LIKE operator of a person known as "JEN"
+SELECT first_name, last_name
+FROM customer
+WHERE first_name LIKE '%er%';
+```
+
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="dvdrental", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,
+"
+SELECT first_name, last_name
+FROM customer
+WHERE first_name LIKE '%er%'
+")
+```
+

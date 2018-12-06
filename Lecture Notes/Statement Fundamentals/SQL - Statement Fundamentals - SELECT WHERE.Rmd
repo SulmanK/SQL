@@ -1,0 +1,247 @@
+---
+title: 'SQL: Statement Fundamentals - SELECT WHERE'
+author: "Sulman Khan"
+date: "`r format(Sys.time(), ' %B %d, %Y')`"
+output: 
+  html_document:
+    css: C:/Users/sulma/OneDrive/Desktop/Data Science/Machine Learning/gf_small_touches.css
+    highlight: tango
+    mathjax: default
+    theme: cerulean
+---
+
+```{r setup, cache = FALSE, echo = FALSE, message = FALSE, warning = FALSE, tidy = FALSE}
+require(knitr)
+options(width = 300 , scipen = 5)
+options(dplyr.print_max = 200)
+# options(width = 100, digits = 7)
+opts_chunk$set(message = FALSE, error = FALSE, warning = FALSE, 
+               collapse = TRUE, tidy = FALSE,
+               cache = TRUE, cache.path = '.cache/', 
+               fig.align = 'left', dpi = 100, fig.path = 'figures/Introductiontotextanalytics/')
+# opts_chunk$set(dev="png", 
+#                dev.args=list(type="cairo"),
+#                dpi=96)
+```
+---
+
+## SQL: Statement Fundamentals
+
+
+### SELECT WHERE
+
+The SELECT DISTINCT function returns particular queries indicated in the rows and columns from a database.
+
+**Conditions**:
+
+| Operator       | Description           | 
+| ------------- |:-------------:| 
+| \(=\)         | Equal         | 
+| \(>\)         | Greater than  | 
+| \(<\)         | Less than     |
+| \(\geq\)      | Greater than or equal to |
+| \(\leq\)      | Less than or equal to |
+| \(\neq\)      | Not equal |
+| AND        | Logical operator AND |
+| OR         | Logical operator OR |
+
+
+**Syntax**:
+
+```{sql, eval = FALSE}
+-- Select particular rows in a database with specific conditions
+SELECT column_1, column_2
+FROM table_name
+WHERE conditions;
+```
+
+**Example**: Select all customers whose first names are Jamie
+
+```{sql, eval = FALSE}
+-- Select all customers whose first names are Jamie
+SELECT last_name, first_name
+FROM customer
+WHERE first_name = 'Jamie';
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="dvdrental", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,
+"
+SELECT last_name, first_name
+FROM customer
+WHERE first_name = 'Jamie'
+")
+```
+
+**Example** : Select the customer whose first name is Jamie and last name is Rice
+
+```{sql, eval = FALSE}
+-- Select the customer whose first name is Jamie and last name is Rice
+SELECT last_name, first_name
+FROM customer
+WHERE first_name = 'Jamie' AND last_name = 'Rice';
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="dvdrental", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,
+"
+SELECT last_name, first_name
+FROM customer
+WHERE first_name = 'Jamie' AND last_name = 'Rice'
+")
+```
+
+**Example**: Who paid the rental with amount is either less than \$1 or greater than \$8
+
+```{sql, eval = FALSE}
+-- Select the customer who paid the rental with amount is either less than $1 or greater than $8
+SELECT customer_id, amount, payment_date
+FROM payment
+WHERE amount <= 1 OR amount >= 8;
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="dvdrental", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,
+"
+SELECT customer_id, amount, payment_date
+FROM payment
+WHERE amount <= 1 OR amount >= 8
+")
+```
+
+**Examples**: Various SELECT WHERE examples
+
+```{sql, eval = FALSE}
+-- Select all rows and columns from the customer table
+SELECT *
+FROM customer;
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="dvdrental", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,
+"
+SELECT *
+FROM customer
+")
+```
+
+```{sql, eval = FALSE}
+-- Select queries from the customer table where the first name is Jared
+SELECT * 
+FROM customer
+WHERE first_name = 'Jared';
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="dvdrental", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,
+"
+SELECT * 
+FROM customer
+WHERE first_name = 'Jared'
+")
+```
+
+#### Challenge
+
+**Problem**: What's the email for the customer with the name Nancy Thomas?
+
+```{sql, eval = FALSE}
+-- Select the email for the customer with the name Nancy Thomas
+SELECT email
+FROM customer
+WHERE first_name = 'Nancy' AND last_name = 'Thomas';
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="dvdrental", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,
+"
+SELECT email
+FROM customer
+WHERE first_name = 'Nancy' AND last_name = 'Thomas'
+")
+```
+
+**Problem**: Could you provide a description for the movie "Outlaw Hanky"?
+
+```{sql, eval = FALSE}
+-- Select the description for the movie "Outlaw Hanky"
+SELECT description
+FROM film
+WHERE title = 'Outlaw Hanky';
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="dvdrental", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,
+"
+SELECT description
+FROM film
+WHERE title = 'Outlaw Hanky'
+")
+```
+
+**Problem**: Could you provide the phone number for the customer who lives at "259 Ipoh Drive"?
+
+```{sql, eval = FALSE}
+-- Select the customer's phone number who lives at "259 Ipoh Drive"
+SELECT phone
+FROM address
+WHERE address = '259 Ipoh Drive';
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="dvdrental", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,
+"
+SELECT phone
+FROM address
+WHERE address = '259 Ipoh Drive'
+")
+```
+

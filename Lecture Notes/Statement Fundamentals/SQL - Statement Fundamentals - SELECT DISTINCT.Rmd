@@ -1,0 +1,96 @@
+---
+title: 'SQL: Statement Fundamentals - SELECT DISTINCT'
+author: "Sulman Khan"
+date: "`r format(Sys.time(), ' %B %d, %Y')`"
+output: 
+  html_document:
+    css: C:/Users/sulma/OneDrive/Desktop/Data Science/Machine Learning/gf_small_touches.css
+    highlight: tango
+    mathjax: default
+    theme: cerulean
+---
+
+```{r setup, cache = FALSE, echo = FALSE, message = FALSE, warning = FALSE, tidy = FALSE}
+require(knitr)
+options(width = 300 , scipen = 5)
+options(dplyr.print_max = 200)
+# options(width = 100, digits = 7)
+opts_chunk$set(message = FALSE, error = FALSE, warning = FALSE, 
+               collapse = TRUE, tidy = FALSE,
+               cache = TRUE, cache.path = '.cache/', 
+               fig.align = 'left', dpi = 100, fig.path = 'figures/Introductiontotextanalytics/')
+# opts_chunk$set(dev="png", 
+#                dev.args=list(type="cairo"),
+#                dpi=96)
+```
+---
+
+## SQL: Statement Fundamentals
+
+
+### SELECT DISTINCT
+
+The SELECT DISTINCT function returns unique queries indicated in the rows and columns from a database.
+
+**Syntax**: 
+
+```{sql, eval = FALSE}
+-- Selects distinct queries in column_1 and column_2 from table_name 
+SELECT DISTINCT column_1, column_2
+FROM table_name;
+```
+
+
+**Example**: Find all the distinct years that films were released
+```{sql, eval = FALSE}
+-- Select queries in the release year fron the film table
+SELECT release_year
+FROM film;
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="dvdrental", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"SELECT release_year FROM film")
+```
+
+```{sql, eval = FALSE}
+-- Select distinct queries in the release year from the film table
+SELECT DISTINCT release_year
+FROM film;
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="dvdrental", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"SELECT DISTINCT release_year FROM film")
+```
+
+#### Challenge
+
+**Problem**: Use a SELECT DISTINCT statement to get the distinct rating types of our films database
+
+```{sql, eval = FALSE}
+-- Select distinct ratings from the film table
+SELECT DISTINCT rating
+FROM film;
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="dvdrental", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"SELECT DISTINCT rating FROM film")
+```
+

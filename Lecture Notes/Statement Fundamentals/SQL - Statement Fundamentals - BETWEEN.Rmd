@@ -1,0 +1,94 @@
+---
+title: 'SQL: Statement Fundamentals - BETWEEN'
+author: "Sulman Khan"
+date: "`r format(Sys.time(), ' %B %d, %Y')`"
+output: 
+  html_document:
+    css: C:/Users/sulma/OneDrive/Desktop/Data Science/Machine Learning/gf_small_touches.css
+    highlight: tango
+    mathjax: default
+    theme: cerulean
+---
+
+```{r setup, cache = FALSE, echo = FALSE, message = FALSE, warning = FALSE, tidy = FALSE}
+require(knitr)
+options(width = 300 , scipen = 5)
+options(dplyr.print_max = 200)
+# options(width = 100, digits = 7)
+opts_chunk$set(message = FALSE, error = FALSE, warning = FALSE, 
+               collapse = TRUE, tidy = FALSE,
+               cache = TRUE, cache.path = '.cache/', 
+               fig.align = 'left', dpi = 100, fig.path = 'figures/Introductiontotextanalytics/')
+# opts_chunk$set(dev="png", 
+#                dev.args=list(type="cairo"),
+#                dpi=96)
+```
+---
+
+## SQL: Statement Fundamentals
+
+
+### BETWEEN
+
+BETWEEEN operator to match a value against a range of values.
+
+**SYNTAX**:
+
+```{sql, eval = FALSE}
+--BETWEEN
+value >= low value <= high
+value BETWEEN low AND high
+
+-- NOT BETWEEN
+value < low OR value > high
+value NOT BETWEEN low AND high
+```
+
+**Example**: Select the customer_ID and payment amount is between \$8 and \$9
+
+```{sql, eval = FALSE}
+-- Select the customer_ID and payment amount is between $8 and $9
+SELECT customer_ID, amount
+FROM payment
+WHERE amount BETWEEN 8 AND 9;
+````
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="dvdrental", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,
+"
+SELECT customer_ID, amount
+FROM payment
+WHERE amount BETWEEN 8 AND 9
+")
+```
+
+**Example**: Select the customer_ID and payment amount is not between \$8 and \$9
+
+```{sql, eval = FALSE}
+-- Select the customer_ID and payment amount is not between $8 and $9
+SELECT customer_ID, amount
+FROM payment
+WHERE amount NOT BETWEEN 8 AND 9;
+````
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="dvdrental", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,
+"
+SELECT customer_ID, amount
+FROM payment
+WHERE amount NOT BETWEEN 8 AND 9
+")
+```
+

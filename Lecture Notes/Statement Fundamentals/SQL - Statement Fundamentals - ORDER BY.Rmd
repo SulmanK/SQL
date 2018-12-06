@@ -1,0 +1,171 @@
+---
+title: 'SQL: Statement Fundamentals - ORDER BY'
+author: "Sulman Khan"
+date: "`r format(Sys.time(), ' %B %d, %Y')`"
+output: 
+  html_document:
+    css: C:/Users/sulma/OneDrive/Desktop/Data Science/Machine Learning/gf_small_touches.css
+    highlight: tango
+    mathjax: default
+    theme: cerulean
+---
+
+```{r setup, cache = FALSE, echo = FALSE, message = FALSE, warning = FALSE, tidy = FALSE}
+require(knitr)
+options(width = 300 , scipen = 5)
+options(dplyr.print_max = 200)
+# options(width = 100, digits = 7)
+opts_chunk$set(message = FALSE, error = FALSE, warning = FALSE, 
+               collapse = TRUE, tidy = FALSE,
+               cache = TRUE, cache.path = '.cache/', 
+               fig.align = 'left', dpi = 100, fig.path = 'figures/Introductiontotextanalytics/')
+# opts_chunk$set(dev="png", 
+#                dev.args=list(type="cairo"),
+#                dpi=96)
+```
+---
+
+## SQL: Statement Fundamentals
+
+
+### ORDER BY
+
+Sorts the resulting set either in an ascending or descending order based on criteria chosen.
+
+**Syntax**:
+
+```{sql, eval = FALSE}
+-- ORDER BY
+SELECT column_1, column_2
+FROM table_name
+ORDER BY column_1 ASC/DESC;
+```
+
+**Example**: Sort the customers by first name in ascending order.
+
+```{sql, eval = FALSE}
+-- Sort by first_name in ascending order from the customer table
+SELECT first_name, last_name
+FROM customer
+ORDER BY first_name ASC;
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="dvdrental", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,
+"
+SELECT first_name, last_name
+FROM customer
+ORDER BY first_name ASC
+")
+```
+
+**Example**: Sort the customers by last name in descending order.
+
+```{sql, eval = FALSE}
+-- Sort by last_name in descending order from the customer table
+SELECT first_name, last_name
+FROM customer
+ORDER BY last_name DESC;
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="dvdrental", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,
+"
+SELECT first_name, last_name
+FROM customer
+ORDER BY last_name DESC
+")
+```
+
+**Example**: Sort the customers by first name in the ascending order first and then sort the sorted result set by the last name in descending order
+
+```{sql, eval = FALSE}
+-- Sort by first_name in the ascending order, and then sort by last name in descending order from the customer table
+SELECT first_name, last_name
+FROM customer
+ORDER BY first_name ASC,
+last_name DESC;
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="dvdrental", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,
+"
+SELECT first_name, last_name
+FROM customer
+ORDER BY first_name ASC,
+last_name DESC
+")
+```
+
+#### Challenge
+
+**Problem**: Get the customer_ID numbers for the top 10 highest payment amounts. 
+
+```{sql, eval = FALSE}
+-- Select customer ID numbers and sort them based on the top 10 highest payment amounts
+SELECT customer_ID, amount
+FROM payment
+ORDER BY amount DESC
+LIMIT 10;
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="dvdrental", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,
+"
+SELECT customer_ID, amount
+FROM payment
+ORDER BY amount DESC
+LIMIT 10
+")
+```
+
+**Problem**: Get the titles of the movies with film ids 1-5.
+
+```{sql, eval = FALSE}
+-- Select the titles of the movies with film ids 1-5
+SELECT title, film_id
+FROM film
+ORDER BY film_id ASC
+LIMIT 5;
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="dvdrental", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,
+"
+SELECT title, film_id
+FROM film
+ORDER BY film_id ASC
+LIMIT 5
+")
+```
+
