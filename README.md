@@ -46,7 +46,7 @@ Includes lecture notes and exercises using SQL commands.
       + [UNIQUE Constraint](https://rpubs.com/SulmanKhan/446989)
  * SQL: Bonus Lectures
       + [Views](https://rpubs.com/SulmanKhan/447035)
-      + [PostGreSQL with Python]()
+      + [PostGreSQL with Python](https://github.com/SulmanK/SQL/blob/master/Lecture%20Notes/Extra/PostGreSQL%20with%20Python.txt)
     
 ## Exercises
  * [SQL: Statement Fundamentals - General Challenges](https://rpubs.com/SulmanKhan/446192)
