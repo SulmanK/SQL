@@ -1,0 +1,363 @@
+---
+title: 'SQL: Stanford Exercises - Social Network - PART I'
+author: "Sulman Khan"
+date: "`r format(Sys.time(), ' %B %d, %Y')`"
+output: 
+  html_document:
+    css: C:/Users/sulma/OneDrive/Desktop/Data Science/Machine Learning/gf_small_touches.css
+    highlight: tango
+    mathjax: default
+    theme: cerulean
+---
+
+```{r setup, cache = FALSE, echo = FALSE, message = FALSE, warning = FALSE, tidy = FALSE}
+require(knitr)
+options(width = 300 , scipen = 5)
+options(dplyr.print_max = 200)
+# options(width = 100, digits = 7)
+opts_chunk$set(message = FALSE, error = FALSE, warning = FALSE, 
+               collapse = TRUE, tidy = FALSE,
+               cache = TRUE, cache.path = '.cache/', 
+               fig.align = 'left', dpi = 100, fig.path = 'figures/Introductiontotextanalytics/')
+# opts_chunk$set(dev="png", 
+#                dev.args=list(type="cairo"),
+#                dpi=96)
+```
+---
+
+## SQL: Stanford's Exercises - Social Network - PART I
+
+Students at your hometown high school have decided to organize their social network using databases. So far, they have collected information about sixteen students in four grades, 9-12. 
+
+```{sql, eval = FALSE}
+-- Database of social networking database
+/* Delete the tables if they already exist */
+drop table if exists Highschooler;
+drop table if exists Friend;
+drop table if exists Likes;
+
+/* Create the schema for our tables */
+create table Highschooler(ID int, name text, grade int);
+create table Friend(ID1 int, ID2 int);
+create table Likes(ID1 int, ID2 int);
+
+/* Populate the tables with our data */
+insert into Highschooler values (1510, 'Jordan', 9);
+insert into Highschooler values (1689, 'Gabriel', 9);
+insert into Highschooler values (1381, 'Tiffany', 9);
+insert into Highschooler values (1709, 'Cassandra', 9);
+insert into Highschooler values (1101, 'Haley', 10);
+insert into Highschooler values (1782, 'Andrew', 10);
+insert into Highschooler values (1468, 'Kris', 10);
+insert into Highschooler values (1641, 'Brittany', 10);
+insert into Highschooler values (1247, 'Alexis', 11);
+insert into Highschooler values (1316, 'Austin', 11);
+insert into Highschooler values (1911, 'Gabriel', 11);
+insert into Highschooler values (1501, 'Jessica', 11);
+insert into Highschooler values (1304, 'Jordan', 12);
+insert into Highschooler values (1025, 'John', 12);
+insert into Highschooler values (1934, 'Kyle', 12);
+insert into Highschooler values (1661, 'Logan', 12);
+
+insert into Friend values (1510, 1381);
+insert into Friend values (1510, 1689);
+insert into Friend values (1689, 1709);
+insert into Friend values (1381, 1247);
+insert into Friend values (1709, 1247);
+insert into Friend values (1689, 1782);
+insert into Friend values (1782, 1468);
+insert into Friend values (1782, 1316);
+insert into Friend values (1782, 1304);
+insert into Friend values (1468, 1101);
+insert into Friend values (1468, 1641);
+insert into Friend values (1101, 1641);
+insert into Friend values (1247, 1911);
+insert into Friend values (1247, 1501);
+insert into Friend values (1911, 1501);
+insert into Friend values (1501, 1934);
+insert into Friend values (1316, 1934);
+insert into Friend values (1934, 1304);
+insert into Friend values (1304, 1661);
+insert into Friend values (1661, 1025);
+insert into Friend SELECT ID2, ID1 FROM Friend;
+
+insert into Likes values(1689, 1709);
+insert into Likes values(1709, 1689);
+insert into Likes values(1782, 1709);
+insert into Likes values(1911, 1247);
+insert into Likes values(1247, 1468);
+insert into Likes values(1641, 1468);
+insert into Likes values(1316, 1304);
+insert into Likes values(1501, 1934);
+insert into Likes values(1934, 1501);
+insert into Likes values(1025, 1101);
+
+```
+
+### Problem 1
+
+**Problem**: Find the names of all students who are friends with someone named Gabriel. 
+
+```{sql, eval = FALSE}
+-- Find the names of all students who are friends with someone named Gabriel. 
+SELECT name
+FROM Highschooler
+INNER JOIN FRIEND ON Highschooler.ID = Friend.ID1
+WHERE ID2 IN (SELECT ID FROM HIGHSCHOOLER WHERE name = 'Gabriel')
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="StanfordSQL", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+SELECT name
+FROM Highschooler
+INNER JOIN FRIEND ON Highschooler.ID = Friend.ID1
+WHERE ID2 IN (SELECT ID FROM HIGHSCHOOLER WHERE name = 'Gabriel')
+                
+")
+```
+
+### Problem 2
+
+**Problem**: For every student who likes someone 2 or more grades younger than themselves, return that student's name and grade, and the name and grade of the student they like. 
+
+```{sql, eval = FALSE}
+-- For every student who likes someone 2 or more grades younger than themselves, return that student's name and grade, and the name and grade of the student they like. 
+SELECT t1.name, t1.grade, t2.name, t2.grade
+FROM (
+(SELECT * FROM highschooler h, likes l WHERE h.ID = l.ID1) t1
+JOIN
+(SELECT * FROM highschooler h, likes l WHERE h.ID = l.ID2) t2
+ON t1.ID2 = t2.ID2
+)
+WHERE t1.grade-t2.grade >= 2;
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="StanfordSQL", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+SELECT t1.name, t1.grade, t2.name, t2.grade
+FROM (
+(SELECT * FROM highschooler h, likes l WHERE h.ID = l.ID1) t1
+JOIN
+(SELECT * FROM highschooler h, likes l WHERE h.ID = l.ID2) t2
+ON t1.ID2 = t2.ID2
+)
+WHERE t1.grade-t2.grade >= 2
+                
+")
+```
+
+
+### Problem 3
+
+**Problem**: For every pair of students who both like each other, return the name and grade of both students. Include each pair only once, with the two names in alphabetical order. 
+
+```{sql, eval = FALSE}
+-- For every pair of students who both like each other, return the name and grade of both students. Include each pair only once, with the two names in alphabetical order. 
+SELECT t1.name, t1.grade, t2.name, t2.grade FROM (
+(SELECT id1, name, grade, id2 FROM highschooler, likes WHERE ID = ID1) t1
+JOIN
+(SELECT id1, name, grade, id2 FROM highschooler, likes WHERE ID = ID1) t2
+ON t1.id1 = t2.id2
+) group by t1.name, t2.name, t1.grade, t2.grade, t1.id1, t1.id2, t2.id1 having t1.id2 = t2.id1 AND t1.name < t2.name;
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="StanfordSQL", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+SELECT t1.name, t1.grade, t2.name, t2.grade FROM (
+(SELECT id1, name, grade, id2 FROM highschooler, likes WHERE ID = ID1) t1
+JOIN
+(SELECT id1, name, grade, id2 FROM highschooler, likes WHERE ID = ID1) t2
+ON t1.id1 = t2.id2
+) group by t1.name, t2.name, t1.grade, t2.grade, t1.id1, t1.id2, t2.id1 having t1.id2 = t2.id1 AND t1.name < t2.name
+                
+")
+```
+
+### Problem 4
+
+**Problem**: Find all students who do not appear in the Likes table (as a student who likes or is liked) and return their names and grades. Sort by grade, then by name within each grade. 
+
+```{sql, eval = FALSE}
+-- Find all students who do not appear in the Likes table (as a student who likes or is liked) and return their names and grades. Sort by grade, then by name within each grade. 
+SELECT DISTINCT name, grade FROM highschooler, likes
+WHERE id NOT IN (SELECT id1 FROM likes) AND id NOT IN (SELECT id2 FROM likes)
+ORDER BY grade, name;
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="StanfordSQL", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+SELECT DISTINCT name, grade FROM highschooler, likes
+WHERE id NOT IN (SELECT id1 FROM likes) AND id NOT IN (SELECT id2 FROM likes)
+ORDER BY grade, name;
+                
+")
+```
+
+### Problem 5
+
+**Problem**: For every situation where student A likes student B, but we have no information about whom B likes (that is, B does not appear as an ID1 in the Likes table), return A and B's names and grades. 
+
+```{sql, eval = FALSE}
+-- For every situation where student A likes student B, but we have no information about whom B likes (that is, B does not appear as an ID1 in the Likes table), return A and B's names and grades. 
+SELECT t1.name, t1.grade, t2.name, t2.grade
+FROM (SELECT * FROM highschooler, likes WHERE id = id1 AND id2 NOT IN (SELECT id1 FROM likes)) t1
+JOIN highschooler t2 ON t2.id  = t1.id2;
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="StanfordSQL", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+SELECT t1.name, t1.grade, t2.name, t2.grade
+FROM (SELECT * FROM highschooler, likes WHERE id = id1 AND id2 NOT IN (SELECT id1 FROM likes)) t1
+JOIN highschooler t2 ON t2.id  = t1.id2
+                
+")
+```
+
+
+### Problem 6
+
+**Problem**: Find names and grades of students who only have friends in the same grade. Return the result sorted by grade, then by name within each grade. 
+
+```{sql, eval = FALSE}
+-- Find names and grades of students who only have friends in the same grade. Return the result sorted by grade, then by name within each grade. 
+SELECT name, grade FROM highschooler
+WHERE id NOT IN
+(SELECT t1.id  FROM (SELECT * FROM highschooler, friend WHERE id = id1) t1
+JOIN
+highschooler t2 ON t1.id2 = t2.id WHERE t1.grade != t2.grade)
+ORDER BY grade, name;
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="StanfordSQL", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+SELECT name, grade FROM highschooler
+WHERE id NOT IN
+(SELECT t1.id  FROM (SELECT * FROM highschooler, friend WHERE id = id1) t1
+JOIN
+highschooler t2 ON t1.id2 = t2.id WHERE t1.grade != t2.grade)
+ORDER BY grade, name
+                
+")
+```
+
+
+### Problem 7
+
+**Problem**: For each student A who likes a student B where the two are not friends, find if they have a friend C in common (who can introduce them!). For all such trios, return the name and grade of A, B, and C. 
+
+```{sql, eval = FALSE}
+-- For each student A who likes a student B where the two are not friends, find if they have a friend C in common (who can introduce them!). For all such trios, return the name and grade of A, B, and C. 
+SELECT h1.name, h1.grade, h2.name, h2.grade, h3.name, h3.grade
+FROM highschooler h1, highschooler h2, highschooler h3,
+(SELECT l.id1 AS lid1, l.id2 AS lid2, f2.id1 AS f2id1 FROM likes l, friend f2, friend f3 WHERE
+not exists (SELECT f.id1, f.id2 FROM friend f WHERE f.id1 = l.id1 AND f.id2 = l.id2)
+AND f2.id2 = l.id1 AND f3.id2 = l.id2 AND f2.id1 = f3.id1) AS t
+WHERE h1.id = t.lid1 AND h2.id = t.lid2 AND h3.id = f2id1;
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="StanfordSQL", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+SELECT h1.name, h1.grade, h2.name, h2.grade, h3.name, h3.grade
+FROM highschooler h1, highschooler h2, highschooler h3,
+(SELECT l.id1 AS lid1, l.id2 AS lid2, f2.id1 AS f2id1 FROM likes l, friend f2, friend f3 WHERE
+not exists (SELECT f.id1, f.id2 FROM friend f WHERE f.id1 = l.id1 AND f.id2 = l.id2)
+AND f2.id2 = l.id1 AND f3.id2 = l.id2 AND f2.id1 = f3.id1) AS t
+WHERE h1.id = t.lid1 AND h2.id = t.lid2 AND h3.id = f2id1;
+                
+")
+```
+
+### Problem 8
+
+**Problem**: Find the difference between the number of students in the school and the number of different first names. 
+
+```{sql, eval = FALSE}
+-- Find the difference between the number of students in the school and the number of different first names. 
+SELECT (SELECT count(id) 
+FROM Highschooler)-(SELECT count(DISTINCT name) FROM Highschooler);
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="StanfordSQL", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+SELECT (SELECT count(id) 
+FROM Highschooler)-(SELECT count(DISTINCT name) FROM Highschooler)
+                
+")
+```
+
+
+### Problem 9
+
+**Problem**: Find the name and grade of all students who are liked by more than one other student. 
+
+```{sql, eval = FALSE}
+-- Find the name and grade of all students who are liked by more than one other student. 
+SELECT name, grade
+FROM
+(SELECT id2 FROM highschooler, likes WHERE id = id1 GROUP BY id2 HAVING count(id2) > 1) t1, highschooler t2
+WHERE t1.id2 = t2.id;
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="StanfordSQL", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+SELECT name, grade
+FROM
+(SELECT id2 FROM highschooler, likes WHERE id = id1 GROUP BY id2 HAVING count(id2) > 1) t1, highschooler t2
+WHERE t1.id2 = t2.id;
+                
+")
+```

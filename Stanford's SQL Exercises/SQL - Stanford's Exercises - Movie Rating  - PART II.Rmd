@@ -1,0 +1,442 @@
+---
+title: 'SQL: Stanford Exercises - Movie Rating Website - PART II'
+author: "Sulman Khan"
+date: "`r format(Sys.time(), ' %B %d, %Y')`"
+output: 
+  html_document:
+    css: C:/Users/sulma/OneDrive/Desktop/Data Science/Machine Learning/gf_small_touches.css
+    highlight: tango
+    mathjax: default
+    theme: cerulean
+---
+
+```{r setup, cache = FALSE, echo = FALSE, message = FALSE, warning = FALSE, tidy = FALSE}
+require(knitr)
+options(width = 300 , scipen = 5)
+options(dplyr.print_max = 200)
+# options(width = 100, digits = 7)
+opts_chunk$set(message = FALSE, error = FALSE, warning = FALSE, 
+               collapse = TRUE, tidy = FALSE,
+               cache = TRUE, cache.path = '.cache/', 
+               fig.align = 'left', dpi = 100, fig.path = 'figures/Introductiontotextanalytics/')
+# opts_chunk$set(dev="png", 
+#                dev.args=list(type="cairo"),
+#                dpi=96)
+```
+---
+
+## SQL: Stanford's Exercises - Movie Rating - PART II
+
+You've started a new movie-rating website, and you've been collecting data on reviewers' ratings of various movies.
+
+### Problem 10
+
+**Problem**: Find the names of all reviewers who rated Gone with the Wind. 
+
+```{sql, eval = FALSE}
+-- Find the names of all reviewers who rated Gone with the Wind. 
+SELECT DISTINCT name
+FROM Rating
+INNER JOIN Movie
+ON Movie.mID = Rating.mID
+INNER JOIN Reviewer
+ON Reviewer.rID = Rating.rID
+WHERE title = 'Gone with the Wind';
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="StanfordSQL", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+SELECT DISTINCT name
+FROM Rating
+INNER JOIN Movie
+ON Movie.mID = Rating.mID
+INNER JOIN Reviewer
+ON Reviewer.rID = Rating.rID
+WHERE title = 'Gone with the Wind'
+                
+")
+```
+
+### Problem 11
+
+**Problem**: For any rating where the reviewer is the same as the director of the movie, return the reviewer name, movie title, and number of stars.  
+
+```{sql, eval = FALSE}
+-- For any rating where the reviewer is the same as the director of the movie, return the reviewer name, movie title, and number of stars. 
+SELECT name, title, stars
+FROM Rating
+INNER JOIN Movie
+ON Movie.mID = Rating.mID
+INNER JOIN Reviewer
+ON Reviewer.rID = Rating.rID
+WHERE name = director;
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="StanfordSQL", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+SELECT name, title, stars
+FROM Rating
+INNER JOIN Movie
+ON Movie.mID = Rating.mID
+INNER JOIN Reviewer
+ON Reviewer.rID = Rating.rID
+WHERE name = director
+                
+")
+```
+
+
+### Problem 12
+
+**Problem**: Return all reviewer names and movie names together in a single list, alphabetized. (Sorting by the first name of the reviewer and first word in the title is fine; no need for special processing on last names or removing "The".) 
+
+```{sql, eval = FALSE}
+-- Return all reviewer names and movie names together in a single list, alphabetized. (Sorting by the first name of the reviewer and first word in the title is fine; no need for special processing on last names or removing "The".)  
+SELECT name as cname from Reviewer
+union all
+select title as cname from Movie
+ORDER BY cname ASC;
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="StanfordSQL", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+SELECT name as cname from Reviewer
+union all
+select title as cname from Movie
+ORDER BY cname ASC
+                
+")
+```
+
+### Problem 13
+
+**Problem**: Find the titles of all movies not reviewed by Chris Jackson. 
+
+```{sql, eval = FALSE}
+-- Find the titles of all movies not reviewed by Chris Jackson. 
+SELECT title
+FROM Movie
+WHERE mID NOT IN ( 
+SELECT mID FROM Rating INNER JOIN REVIEWER ON rating.rID = reviewer.rid 
+WHERE name = 'Chris Jackson'
+);
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="StanfordSQL", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+SELECT title
+FROM Movie
+WHERE mID NOT IN ( 
+SELECT mID FROM Rating INNER JOIN REVIEWER ON rating.rID = reviewer.rid 
+WHERE name = 'Chris Jackson'
+)
+                
+")
+```
+
+### Problem 14
+
+**Problem**: For all pairs of reviewers such that both reviewers gave a rating to the same movie, return the names of both reviewers. Eliminate duplicates, don't pair reviewers with themselves, and include each pair only once. For each pair, return the names in the pair in alphabetical order. 
+
+```{sql, eval = FALSE}
+-- For all pairs of reviewers such that both reviewers gave a rating to the same movie, return the names of both reviewers. Eliminate duplicates, don't pair reviewers with themselves, and include each pair only once. For each pair, return the names in the pair in alphabetical order. 
+SELECT DISTINCT Reviewer1.name, Reviewer2.name
+FROM Rating R1, Rating R2, Reviewer Reviewer1, Reviewer Reviewer2
+WHERE R1.mID = R2.mID AND R1.rID = Reviewer1.rID AND R2.rID = Reviewer2.rID AND Reviewer1.name < Reviewer2.name
+ORDER BY Reviewer1.name, Reviewer2.name;
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="StanfordSQL", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+SELECT DISTINCT Reviewer1.name, Reviewer2.name
+FROM Rating R1, Rating R2, Reviewer Reviewer1, Reviewer Reviewer2
+WHERE R1.mID = R2.mID AND R1.rID = Reviewer1.rID AND R2.rID = Reviewer2.rID AND Reviewer1.name < Reviewer2.name
+ORDER BY Reviewer1.name, Reviewer2.name
+                
+")
+```
+
+
+### Problem 15
+
+**Problem**: For each rating that is the lowest (fewest stars) currently in the database, return the reviewer name, movie title, and number of stars. 
+
+```{sql, eval = FALSE}
+-- For each rating that is the lowest (fewest stars) currently in the database, return the reviewer name, movie title, and number of stars. 
+SELECT name, title, stars
+FROM MOVIE
+INNER JOIN RATING ON Movie.mID = Rating.mID
+INNER JOIN REVIEWER ON Reviewer.rID = Rating.rID
+WHERE stars = (SELECT MIN(stars) FROM RATING);
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="StanfordSQL", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+SELECT name, title, stars
+FROM MOVIE
+INNER JOIN RATING ON Movie.mID = Rating.mID
+INNER JOIN REVIEWER ON Reviewer.rID = Rating.rID
+WHERE stars = (SELECT MIN(stars) FROM RATING)
+                
+")
+```
+
+
+### Problem 16
+
+**Problem**: List movie titles and average ratings, from highest-rated to lowest-rated. If two or more movies have the same average rating, list them in alphabetical order. 
+
+```{sql, eval = FALSE}
+-- List movie titles and average ratings, from highest-rated to lowest-rated. If two or more movies have the same average rating, list them in alphabetical order.  
+SELECT title, AVG(Stars)
+FROM MOVIE
+INNER JOIN RATING ON Movie.mID = Rating.mID
+INNER JOIN REVIEWER ON Reviewer.rID = Rating.rID
+GROUP BY rating.mid, title
+ORDER BY AVG(STARS) DESC, title ASC;
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="StanfordSQL", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+SELECT title, AVG(Stars)
+FROM MOVIE
+INNER JOIN RATING ON Movie.mID = Rating.mID
+INNER JOIN REVIEWER ON Reviewer.rID = Rating.rID
+GROUP BY rating.mid, title
+ORDER BY AVG(STARS) DESC, title ASC
+                
+")
+```
+
+### Problem 17
+
+**Problem**: Find the names of all reviewers who have contributed three or more ratings. (As an extra challenge, try writing the query without HAVING or without COUNT.) 
+
+```{sql, eval = FALSE}
+-- Find the names of all reviewers who have contributed three or more ratings. (As an extra challenge, try writing the query without HAVING or without COUNT.) 
+SELECT name
+FROM MOVIE
+INNER JOIN RATING ON Movie.mID = Rating.mID
+INNER JOIN REVIEWER ON Reviewer.rID = Rating.rID
+GROUP BY reviewer.rID, name
+HAVING COUNT(*) >= 3;
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="StanfordSQL", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+SELECT name
+FROM MOVIE
+INNER JOIN RATING ON Movie.mID = Rating.mID
+INNER JOIN REVIEWER ON Reviewer.rID = Rating.rID
+GROUP BY reviewer.rID, name
+HAVING COUNT(*) >= 3
+                
+")
+```
+
+
+### Problem 18
+
+**Problem**: Some directors directed more than one movie. For all such directors, return the titles of all movies directed by them, along with the director name. Sort by director name, then movie title. (As an extra challenge, try writing the query both with and without COUNT.) 
+
+```{sql, eval = FALSE}
+-- Some directors directed more than one movie. For all such directors, return the titles of all movies directed by them, along with the director name. Sort by director name, then movie title. (As an extra challenge, try writing the query both with and without COUNT.) 
+SELECT M1.title, m1.director
+FROM MOVIE M1
+INNER JOIN MOVIE M2 ON M1.director = M2.director
+GROUP BY m1.mID, m1.title, m1.director
+HAVING COUNT(*) >1
+ORDER BY m1.director, m1.title;
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="StanfordSQL", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+SELECT M1.title, m1.director
+FROM MOVIE M1
+INNER JOIN MOVIE M2 ON M1.director = M2.director
+GROUP BY m1.mID, m1.title, m1.director
+HAVING COUNT(*) >1
+ORDER BY m1.director, m1.title
+                
+")
+```
+
+### Problem 19
+
+**Problem**: Find the movie(s) with the highest average rating. Return the movie title(s) and average rating. (Hint: This query is more difficult to write in SQLite than other systems; you might think of it as finding the highest average rating and then choosing the movie(s) with that average rating.)  
+
+```{sql, eval = FALSE}
+-- Find the movie(s) with the highest average rating. Return the movie title(s) and average rating. (Hint: This query is more difficult to write in SQLite than other systems; you might think of it as finding the highest average rating and then choosing the movie(s) with that average rating.)  
+SELECT title, AVG(stars) as average
+FROM MOVIE
+INNER JOIN RATING ON Movie.mID = Rating.mID
+INNER JOIN REVIEWER ON Reviewer.rID = Rating.rID
+GROUP BY movie.mID, title
+HAVING  AVG(stars) = (
+SELECT MAX(avg_stars)
+FROM (
+SELECT title, AVG(stars) AS avg_stars
+FROM MOVIE
+INNER JOIN RATING ON Rating.mID = Movie.mID
+GROUP BY movie.mID, title
+) I
+);
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="StanfordSQL", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+SELECT title, AVG(stars) as average
+FROM MOVIE
+INNER JOIN RATING ON Movie.mID = Rating.mID
+INNER JOIN REVIEWER ON Reviewer.rID = Rating.rID
+GROUP BY movie.mID, title
+HAVING  AVG(stars) = (
+SELECT MAX(avg_stars)
+FROM (
+SELECT title, AVG(stars) AS avg_stars
+FROM MOVIE
+INNER JOIN RATING ON Rating.mID = Movie.mID
+GROUP BY movie.mID, title
+) I
+)
+                
+")
+```
+
+### Problem 20
+
+**Problem**: Find the movie(s) with the lowest average rating. Return the movie title(s) and average rating. (Hint: This query may be more difficult to write in SQLite than other systems; you might think of it as finding the lowest average rating and then choosing the movie(s) with that average rating.)  
+
+```{sql, eval = FALSE}
+-- Find the movie(s) with the lowest average rating. Return the movie title(s) and average rating. (Hint: This query may be more difficult to write in SQLite than other systems; you might think of it as finding the lowest average rating and then choosing the movie(s) with that average rating.)  
+SELECT title, AVG(stars) as average
+FROM MOVIE
+INNER JOIN RATING ON Movie.mID = Rating.mID
+INNER JOIN REVIEWER ON Reviewer.rID = Rating.rID
+GROUP BY movie.mID, title
+HAVING  AVG(stars) = (
+SELECT MIN(avg_stars)
+FROM (
+SELECT title, AVG(stars) AS avg_stars
+FROM MOVIE
+INNER JOIN RATING ON Rating.mID = Movie.mID
+GROUP BY movie.mID, title
+) I
+);
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="StanfordSQL", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+SELECT title, AVG(stars) as average
+FROM MOVIE
+INNER JOIN RATING ON Movie.mID = Rating.mID
+INNER JOIN REVIEWER ON Reviewer.rID = Rating.rID
+GROUP BY movie.mID, title
+HAVING  AVG(stars) = (
+SELECT MIN(avg_stars)
+FROM (
+SELECT title, AVG(stars) AS avg_stars
+FROM MOVIE
+INNER JOIN RATING ON Rating.mID = Movie.mID
+GROUP BY movie.mID, title
+) I
+)
+                
+")
+```
+
+### Problem 21
+
+**Problem**: For each director, return the director's name together with the title(s) of the movie(s) they directed that received the highest rating among all of their movies, and the value of that rating. Ignore movies whose director is NULL.  
+
+```{sql, eval = FALSE}
+-- For each director, return the director's name together with the title(s) of the movie(s) they directed that received the highest rating among all of their movies, and the value of that rating. Ignore movies whose director is NULL. 
+SELECT director, title, MAX(stars)
+FROM Movie
+INNER JOIN RATING ON rating.mID = movie.mID
+WHERE DIRECTOR is NOT NULL
+GROUP BY DIRECTOR, title;
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="StanfordSQL", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+SELECT director, title, MAX(stars)
+FROM Movie
+INNER JOIN RATING ON rating.mID = movie.mID
+WHERE DIRECTOR is NOT NULL
+GROUP BY DIRECTOR, title
+                
+")
+```

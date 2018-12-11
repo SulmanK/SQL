@@ -1,0 +1,140 @@
+---
+title: 'SQL: Stanford Exercises - Movie Rating Website - PART III'
+author: "Sulman Khan"
+date: "`r format(Sys.time(), ' %B %d, %Y')`"
+output: 
+  html_document:
+    css: C:/Users/sulma/OneDrive/Desktop/Data Science/Machine Learning/gf_small_touches.css
+    highlight: tango
+    mathjax: default
+    theme: cerulean
+---
+
+```{r setup, cache = FALSE, echo = FALSE, message = FALSE, warning = FALSE, tidy = FALSE}
+require(knitr)
+options(width = 300 , scipen = 5)
+options(dplyr.print_max = 200)
+# options(width = 100, digits = 7)
+opts_chunk$set(message = FALSE, error = FALSE, warning = FALSE, 
+               collapse = TRUE, tidy = FALSE,
+               cache = TRUE, cache.path = '.cache/', 
+               fig.align = 'left', dpi = 100, fig.path = 'figures/Introductiontotextanalytics/')
+# opts_chunk$set(dev="png", 
+#                dev.args=list(type="cairo"),
+#                dpi=96)
+```
+---
+
+## SQL: Stanford's Exercises - Movie Rating - PART III
+
+You've started a new movie-rating website, and you've been collecting data on reviewers' ratings of various movies.
+
+
+### Problem 22
+
+**Problem**: Add the reviewer Roger Ebert to your database, with an rID of 209. 
+
+```{sql, eval = FALSE}
+-- Add the reviewer Roger Ebert to your database, with an rID of 209. 
+INSERT INTO Reviewer(rID, name)
+VALUES (209, 'Roger Ebert')
+```
+
+```{r, echo=FALSE, message=FALSE, 1}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="StanfordSQL", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+select * from Reviewer order by rID, name
+                
+")
+```
+
+
+### Problem 23
+
+**Problem**: Insert 5-star ratings by James Cameron for all movies in the database. Leave the review date as NULL. 
+
+```{sql, eval = FALSE}
+-- Insert 5-star ratings by James Cameron for all movies in the database. Leave the review date as NULL. 
+
+INSERT INTO Rating  ( rID, mID, stars, ratingDate )
+SELECT Reviewer.rID , Movie.mID, 5, NULL FROM Movie
+LEFT OUTER JOIN Rating USING (mid)
+LEFT OUTER JOIN Reviewer USING (rid)
+WHERE Reviewer.name='James Cameron' 
+
+
+```
+
+```{r, echo=FALSE, message=FALSE, 2}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="StanfordSQL", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+select * from Rating where stars = 5 order by rID, mID
+                
+")
+```
+
+
+### Problem 24
+
+**Problem**: For all movies that have an average rating of 4 stars or higher, add 25 to the release year. (Update the existing tuples; don't insert new tuples.) 
+
+```{sql, eval = FALSE}
+-- Find the titles of all movies that have no ratings. 
+UPDATE movie
+SET year = year + 25
+WHERE mID IN (
+  SELECT mID FROM (
+  SELECT AVG(stars) AS astar, mID FROM Rating
+  WHERE mID=rating.mID
+  GROUP BY mID
+  HAVING AVG(stars) >=4) d
+) 
+```
+
+```{r, echo=FALSE, message=FALSE, 3}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="StanfordSQL", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+select * from Movie order by mID
+                
+")
+```
+
+### Problem 25
+
+**Problem**: Remove all ratings where the movie's year is before 1970 or after 2000, and the rating is fewer than 4 stars. 
+
+```{sql, eval = FALSE}
+-- Remove all ratings where the movie's year is before 1970 or after 2000, and the rating is fewer than 4 stars. 
+DELETE FROM rating
+WHERE mID IN (SELECT mID FROM movie WHERE year <1970 OR year > 2000)
+AND stars < 4;
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="StanfordSQL", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+select R.rID, R.mID, R.stars, M.title, M.year from Rating R join Movie M on (R.mID = M.mID) order by R.rID, R.mID
+                
+")
+```
+

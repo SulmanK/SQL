@@ -1,0 +1,184 @@
+---
+title: 'SQL: Stanford Exercises - Social Network - PART II'
+author: "Sulman Khan"
+date: "`r format(Sys.time(), ' %B %d, %Y')`"
+output: 
+  html_document:
+    css: C:/Users/sulma/OneDrive/Desktop/Data Science/Machine Learning/gf_small_touches.css
+    highlight: tango
+    mathjax: default
+    theme: cerulean
+---
+
+```{r setup, cache = FALSE, echo = FALSE, message = FALSE, warning = FALSE, tidy = FALSE}
+require(knitr)
+options(width = 300 , scipen = 5)
+options(dplyr.print_max = 200)
+# options(width = 100, digits = 7)
+opts_chunk$set(message = FALSE, error = FALSE, warning = FALSE, 
+               collapse = TRUE, tidy = FALSE,
+               cache = TRUE, cache.path = '.cache/', 
+               fig.align = 'left', dpi = 100, fig.path = 'figures/Introductiontotextanalytics/')
+# opts_chunk$set(dev="png", 
+#                dev.args=list(type="cairo"),
+#                dpi=96)
+```
+---
+
+## SQL: Stanford's Exercises - Social Network - PART II
+
+You've started a new movie-rating website, and you've been collecting data on reviewers' ratings of various movies.
+
+### Problem 10
+
+**Problem**: For every situation where student A likes student B, but student B likes a different student C, return the names and grades of A, B, and C. 
+
+```{sql, eval = FALSE}
+-- For every situation where student A likes student B, but student B likes a different student C, return the names and grades of A, B, and C. 
+SELECT H1.name, H1.grade, H2.name, H2.grade, H3.name, H3.grade
+FROM Likes L1, Likes L2, Highschooler H1, Highschooler H2, Highschooler H3
+WHERE L1.ID2 = L2.ID1
+AND L2.ID2 <> L1.ID1
+AND L1.ID1 = H1.ID AND L1.ID2 = H2.ID AND L2.ID2 = H3.ID;
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="StanfordSQL", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+SELECT H1.name, H1.grade, H2.name, H2.grade, H3.name, H3.grade
+FROM Likes L1, Likes L2, Highschooler H1, Highschooler H2, Highschooler H3
+WHERE L1.ID2 = L2.ID1
+AND L2.ID2 <> L1.ID1
+AND L1.ID1 = H1.ID AND L1.ID2 = H2.ID AND L2.ID2 = H3.ID
+                
+")
+```
+
+### Problem 11
+
+**Problem**: Find those students for whom all of their friends are in different grades from themselves. Return the students' names and grades. 
+
+```{sql, eval = FALSE}
+-- Find those students for whom all of their friends are in different grades from themselves. Return the students' names and grades. 
+SELECT name, grade
+FROM Highschooler, (
+  SELECT ID1 FROM Friend
+  except
+  -- students have friends with same grade
+  SELECT DISTINCT Friend.ID1
+  FROM Friend, Highschooler H1, Highschooler H2
+  WHERE Friend.ID1 = H1.ID AND Friend.ID2 = H2.ID
+  AND H1.grade = H2.grade
+) AS Sample
+WHERE Highschooler.ID = Sample.ID1;
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="StanfordSQL", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+SELECT name, grade
+FROM Highschooler, (
+  SELECT ID1 FROM Friend
+  except
+  -- students have friends with same grade
+  SELECT DISTINCT Friend.ID1
+  FROM Friend, Highschooler H1, Highschooler H2
+  WHERE Friend.ID1 = H1.ID AND Friend.ID2 = H2.ID
+  AND H1.grade = H2.grade
+) AS Sample
+WHERE Highschooler.ID = Sample.ID1
+                
+")
+```
+
+
+### Problem 12
+
+**Problem**: What is the average number of friends per student? (Your result should be just one number.) 
+
+```{sql, eval = FALSE}
+-- What is the average number of friends per student? (Your result should be just one number.)  
+SELECT avg(students)
+FROM (SELECT ID1, COUNT (ID2) students FROM friend GROUP BY ID1) D;
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="StanfordSQL", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+SELECT avg(students)
+FROM (SELECT ID1, COUNT (ID2) students FROM friend GROUP BY ID1) D
+                
+")
+```
+
+### Problem 13
+
+**Problem**: Find the number of students who are either friends with Cassandra or are friends of friends of Cassandra. Do not count Cassandra, even though technically she is a friend of a friend. 
+
+```{sql, eval = FALSE}
+-- Find the number of students who are either friends with Cassandra or are friends of friends of Cassandra. Do not count Cassandra, even though technically she is a friend of a friend. 
+SELECT count(id2) FROM friend WHERE id1 IN (
+  SELECT id2 FROM friend WHERE id1 IN (SELECT id FROM highschooler WHERE name='Cassandra')
+)
+and id1 NOT IN (SELECT id FROM highschooler WHERE name='Cassandra');
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="StanfordSQL", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+SELECT count(id2) FROM friend WHERE id1 IN (
+  SELECT id2 FROM friend WHERE id1 IN (SELECT id FROM highschooler WHERE name='Cassandra')
+)
+and id1 NOT IN (SELECT id FROM highschooler WHERE name='Cassandra')
+                
+")
+```
+
+### Problem 14
+
+**Problem**: Find the name and grade of the student(s) with the greatest number of friends. 
+
+```{sql, eval = FALSE}
+-- Find the name and grade of the student(s) with the greatest number of friends.  
+SELECT h.name, h.grade FROM highschooler h, friend f WHERE
+h.id = f.id1 GROUP BY f.id1, h.name, h.grade HAVING count(f.id2) = (
+SELECT max(r.c) FROM
+(SELECT count(id2) AS c FROM friend GROUP BY  id1) AS r);
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="StanfordSQL", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+SELECT h.name, h.grade FROM highschooler h, friend f WHERE
+h.id = f.id1 GROUP BY f.id1, h.name, h.grade HAVING count(f.id2) = (
+SELECT max(r.c) FROM
+(SELECT count(id2) AS c FROM friend GROUP BY  id1) AS r)
+                
+")
+```
+

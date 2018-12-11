@@ -1,0 +1,357 @@
+---
+title: 'SQL: Stanford Exercises - Movie Rating Website - PART I'
+author: "Sulman Khan"
+date: "`r format(Sys.time(), ' %B %d, %Y')`"
+output: 
+  html_document:
+    css: C:/Users/sulma/OneDrive/Desktop/Data Science/Machine Learning/gf_small_touches.css
+    highlight: tango
+    mathjax: default
+    theme: cerulean
+---
+
+```{r setup, cache = FALSE, echo = FALSE, message = FALSE, warning = FALSE, tidy = FALSE}
+require(knitr)
+options(width = 300 , scipen = 5)
+options(dplyr.print_max = 200)
+# options(width = 100, digits = 7)
+opts_chunk$set(message = FALSE, error = FALSE, warning = FALSE, 
+               collapse = TRUE, tidy = FALSE,
+               cache = TRUE, cache.path = '.cache/', 
+               fig.align = 'left', dpi = 100, fig.path = 'figures/Introductiontotextanalytics/')
+# opts_chunk$set(dev="png", 
+#                dev.args=list(type="cairo"),
+#                dpi=96)
+```
+---
+
+## SQL: Stanford's Exercises - Movie Rating - PART I
+
+You've started a new movie-rating website, and you've been collecting data on reviewers' ratings of various movies.
+
+```{sql, eval = FALSE}
+-- Database of movie-rating website
+/* Delete the tables if they already exist */
+drop table if exists Movie;
+drop table if exists Reviewer;
+drop table if exists Rating;
+
+/* Create the schema for our tables */
+create table Movie(mID int, title text, year int, director text);
+create table Reviewer(rID int, name text);
+create table Rating(rID int, mID int, stars int, ratingDate date);
+
+/* Populate the tables with our data */
+insert into Movie values(101, 'Gone with the Wind', 1939, 'Victor Fleming');
+insert into Movie values(102, 'Star Wars', 1977, 'George Lucas');
+insert into Movie values(103, 'The Sound of Music', 1965, 'Robert Wise');
+insert into Movie values(104, 'E.T.', 1982, 'Steven Spielberg');
+insert into Movie values(105, 'Titanic', 1997, 'James Cameron');
+insert into Movie values(106, 'Snow White', 1937, null);
+insert into Movie values(107, 'Avatar', 2009, 'James Cameron');
+insert into Movie values(108, 'Raiders of the Lost Ark', 1981, 'Steven Spielberg');
+
+insert into Reviewer values(201, 'Sarah Martinez');
+insert into Reviewer values(202, 'Daniel Lewis');
+insert into Reviewer values(203, 'Brittany Harris');
+insert into Reviewer values(204, 'Mike Anderson');
+insert into Reviewer values(205, 'Chris Jackson');
+insert into Reviewer values(206, 'Elizabeth Thomas');
+insert into Reviewer values(207, 'James Cameron');
+insert into Reviewer values(208, 'Ashley White');
+
+insert into Rating values(201, 101, 2, '2011-01-22');
+insert into Rating values(201, 101, 4, '2011-01-27');
+insert into Rating values(202, 106, 4, null);
+insert into Rating values(203, 103, 2, '2011-01-20');
+insert into Rating values(203, 108, 4, '2011-01-12');
+insert into Rating values(203, 108, 2, '2011-01-30');
+insert into Rating values(204, 101, 3, '2011-01-09');
+insert into Rating values(205, 103, 3, '2011-01-27');
+insert into Rating values(205, 104, 2, '2011-01-22');
+insert into Rating values(205, 108, 4, null);
+insert into Rating values(206, 107, 3, '2011-01-15');
+insert into Rating values(206, 106, 5, '2011-01-19');
+insert into Rating values(207, 107, 5, '2011-01-20');
+insert into Rating values(208, 104, 3, '2011-01-02');
+```
+
+### Problem 1
+
+**Problem**: Find the titles of all movies directed by Steven Spielberg. 
+
+```{sql, eval = FALSE}
+-- Find the titles of all movies directed by Steven Spielberg. 
+SELECT title
+FROM Movie
+WHERE director = 'Steven Spielberg';
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="StanfordSQL", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+SELECT title
+FROM Movie
+WHERE director = 'Steven Spielberg'
+                
+")
+```
+
+### Problem 2
+
+**Problem**: Find all years that have a movie that received a rating of 4 or 5, and sort them in increasing order. 
+
+```{sql, eval = FALSE}
+-- Find all years that have a movie that received a rating of 4 or 5, and sort them in increasing order. 
+SELECT DISTINCT year
+FROM Movie
+JOIN Rating ON Rating.mID = Movie.mID
+WHERE stars IN (4,5)
+ORDER BY year ASC;
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="StanfordSQL", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+SELECT DISTINCT year
+FROM Movie
+JOIN Rating ON Rating.mID = Movie.mID
+WHERE stars IN (4,5)
+ORDER BY year ASC
+                
+")
+```
+
+
+### Problem 3
+
+**Problem**: Find the titles of all movies that have no ratings. 
+
+```{sql, eval = FALSE}
+-- Find the titles of all movies that have no ratings. 
+SELECT title
+FROM Movie
+LEFT JOIN Rating
+ON Movie.mID = Rating.mID
+WHERE stars IS NULL;
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="StanfordSQL", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+SELECT title
+FROM Movie
+LEFT JOIN Rating
+ON Movie.mID = Rating.mID
+WHERE stars IS NULL
+                
+")
+```
+
+### Problem 4
+
+**Problem**: Some reviewers didn't provide a date with their rating. Find the names of all reviewers who have ratings with a NULL value for the date. 
+
+```{sql, eval = FALSE}
+-- Find the names of all reviewers who have ratings with a NULL value for the date. 
+SELECT name
+FROM Reviewer
+LEFT JOIN Rating
+ON Reviewer.rID = Rating.rID
+WHERE ratingDate IS NULL;
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="StanfordSQL", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+SELECT name
+FROM Reviewer
+LEFT JOIN Rating
+ON Reviewer.rID = Rating.rID
+WHERE ratingDate IS NULL
+                
+")
+```
+
+### Problem 5
+
+**Problem**: Write a query to return the ratings data in a more readable format: reviewer name, movie title, stars, and ratingDate. Also, sort the data, first by reviewer name, then by movie title, and lastly by number of stars. 
+
+```{sql, eval = FALSE}
+-- Write a query to return the ratings data in a more readable format: reviewer name, movie title, stars, and ratingDate. Also, sort the data, first by reviewer name, then by movie title, and lastly by number of stars. 
+SELECT name, title, stars, ratingDate
+FROM Rating
+INNER JOIN Movie
+ON Rating.mID = Movie.mID
+INNER JOIN Reviewer
+ON Rating.rID = Reviewer.rID
+ORDER BY name, title, stars ASC;
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="StanfordSQL", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+SELECT name, title, stars, ratingDate
+FROM Rating
+INNER JOIN Movie
+ON Rating.mID = Movie.mID
+INNER JOIN Reviewer
+ON Rating.rID = Reviewer.rID
+ORDER BY name, title, stars ASC
+                
+")
+```
+
+
+### Problem 6
+
+**Problem**: For all cases where the same reviewer rated the same movie twice and gave it a higher rating the second time, return the reviewer's name and the title of the movie. 
+
+```{sql, eval = FALSE}
+-- For all cases where the same reviewer rated the same movie twice and gave it a higher rating the second time, return the reviewer's name and the title of the movie. 
+SELECT name, title
+FROM Movie
+INNER JOIN Rating R1 USING(mId)
+INNER JOIN Rating R2 USING(rId, mId)
+INNER JOIN Reviewer USING(rId)
+WHERE R1.ratingDate < R2.ratingDate AND R1.stars < R2.stars;
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="StanfordSQL", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+SELECT name, title
+FROM Movie
+INNER JOIN Rating R1 USING(mId)
+INNER JOIN Rating R2 USING(rId, mId)
+INNER JOIN Reviewer USING(rId)
+WHERE R1.ratingDate < R2.ratingDate AND R1.stars < R2.stars;
+                
+")
+```
+
+
+### Problem 7
+
+**Problem**: For each movie that has at least one rating, find the highest number of stars that movie received. Return the movie title and number of stars. Sort by movie title. 
+
+```{sql, eval = FALSE}
+-- Find the titles of all movies directed by Steven Spielberg. 
+SELECT title, max(stars)
+FROM Movie
+JOIN Rating ON Rating.mID = Movie.mID
+GROUP BY Rating.mID, title
+ORDER BY title ASC;
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="StanfordSQL", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+SELECT title, max(stars)
+FROM Movie
+JOIN Rating ON Rating.mID = Movie.mID
+GROUP BY Rating.mID, title
+ORDER BY title ASC
+                
+")
+```
+
+### Problem 8
+
+**Problem**: For each movie, return the title and the 'rating spread', that is, the difference between highest and lowest ratings given to that movie. Sort by rating spread from highest to lowest, then by movie title. 
+
+```{sql, eval = FALSE}
+-- For each movie, return the title and the 'rating spread', that is, the difference between highest and lowest ratings given to that movie. Sort by rating spread from highest to lowest, then by movie title. 
+SELECT title, max(stars)-min(stars) AS rating_spread
+FROM Movie
+JOIN Rating ON Rating.mID = Movie.mID
+GROUP BY Rating.mID, title
+ORDER BY rating_spread DESC, title ASC;
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="StanfordSQL", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+SELECT title, max(stars)-min(stars) AS rating_spread
+FROM Movie
+JOIN Rating ON Rating.mID = Movie.mID
+GROUP BY Rating.mID, title
+ORDER BY rating_spread DESC, title ASC
+                
+")
+```
+
+
+### Problem 9
+
+**Problem**: Find the difference between the average rating of movies released before 1980 and the average rating of movies released after 1980. (Make sure to calculate the average rating for each movie, then the average of those averages for movies before 1980 and movies after. Don't just calculate the overall average rating before and after 1980.) 
+
+```{sql, eval = FALSE}
+-- Find the difference between the average rating of movies released before 1980 and the average rating of movies released after 1980. (Make sure to calculate the average rating for each movie, then the average of those averages for movies before 1980 and movies after. Don't just calculate the overall average rating before and after 1980.) 
+SELECT AVG(average_b1980) - AVG(average_a1980) 
+FROM (
+SELECT AVG(stars) AS average_b1980
+FROM Rating INNER JOIN Movie ON Movie.mID = Rating.mID WHERE year < 1980
+GROUP BY Rating.mID) AS average_bd1980
+), 
+(
+SELECT AVG(stars) AS average_a1980 FROM Rating INNER JOIN Movie ON Movie.mID = Rating.mID WHERE year > 1980
+GROUP BY Rating.mID) AS average_bs1980
+);
+```
+
+```{r, echo=FALSE, message=FALSE}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="StanfordSQL", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+SELECT AVG(average_b1980) - AVG(average_a1980) 
+FROM (SELECT AVG(stars) AS average_b1980 FROM Rating INNER JOIN Movie ON Movie.mID = Rating.mID WHERE year < 1980
+GROUP BY Rating.mID) AS average_bd1980, (SELECT AVG(stars) AS average_a1980 FROM Rating INNER JOIN Movie ON Movie.mID = Rating.mID WHERE year > 1980
+GROUP BY Rating.mID) AS average_bs1980
+                
+")
+```

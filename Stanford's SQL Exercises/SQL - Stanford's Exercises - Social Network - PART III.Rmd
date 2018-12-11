@@ -1,0 +1,109 @@
+---
+title: 'SQL: Stanford Exercises - Social Network - PART III'
+author: "Sulman Khan"
+date: "`r format(Sys.time(), ' %B %d, %Y')`"
+output: 
+  html_document:
+    css: C:/Users/sulma/OneDrive/Desktop/Data Science/Machine Learning/gf_small_touches.css
+    highlight: tango
+    mathjax: default
+    theme: cerulean
+---
+
+```{r setup, cache = FALSE, echo = FALSE, message = FALSE, warning = FALSE, tidy = FALSE}
+require(knitr)
+options(width = 300 , scipen = 5)
+options(dplyr.print_max = 200)
+# options(width = 100, digits = 7)
+opts_chunk$set(message = FALSE, error = FALSE, warning = FALSE, 
+               collapse = TRUE, tidy = FALSE,
+               cache = TRUE, cache.path = '.cache/', 
+               fig.align = 'left', dpi = 100, fig.path = 'figures/Introductiontotextanalytics/')
+# opts_chunk$set(dev="png", 
+#                dev.args=list(type="cairo"),
+#                dpi=96)
+```
+---
+
+## SQL: Stanford's Exercises - Social Network - PART III
+
+You've started a new movie-rating website, and you've been collecting data on reviewers' ratings of various movies.
+
+
+### Problem 15
+
+**Problem**: Add the reviewer Roger Ebert to your database, with an rID of 209. 
+
+```{sql, eval = FALSE}
+-- It's time for the seniors to graduate. Remove all 12th graders from Highschooler.  
+Delete FROM Highschooler
+WHERE grade = 12;
+```
+
+```{r, echo=FALSE, message=FALSE, 1}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="StanfordSQL", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+SELECT * FROM Highschooler ORDER BY ID
+                
+")
+```
+
+
+### Problem 16
+
+**Problem**: If two students A and B are friends, and A likes B but not vice-versa, remove the Likes tuple. 
+
+```{sql, eval = FALSE}
+-- If two students A and B are friends, and A likes B but not vice-versa, remove the Likes tuple. 
+
+DELETE FROM Likes
+WHERE ID2 IN (SELECT ID2 FROM Friend WHERE Likes.ID1 = ID1) AND
+ID2 NOT IN (SELECT L.ID1 FROM Likes L WHERE Likes.ID1 = L.ID2);
+
+
+```
+
+```{r, echo=FALSE, message=FALSE, 2}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="StanfordSQL", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+SELECT H1.name, H1.grade, H2.name, H2.grade FROM Likes L, Highschooler H1, Highschooler H2 WHERE L.ID1 = H1.ID AND L.ID2 = H2.ID ORDER BY H1.name, H1.grade
+                
+")
+```
+
+
+### Problem 17
+
+**Problem**: For all cases where A is friends with B, and B is friends with C, add a new friendship for the pair A and C. Do not add duplicate friendships, friendships that already exist, or friendships with oneself. (This one is a bit challenging; congratulations if you get it right.) 
+
+```{sql, eval = FALSE}
+-- Find the titles of all movies that have no ratings. 
+INSERT INTO Friend
+SELECT DISTINCT F1.ID1, F2.ID2
+FROM Friend F1, Friend F2
+WHERE F1.ID2 = F2.ID1 AND F1.ID1<>F2.ID2 
+      AND F1.ID1 NOT IN (SELECT F3.ID1 FROM Friend F3 WHERE F3.ID2=F2.ID2);
+```
+
+```{r, echo=FALSE, message=FALSE, 3}
+library(RPostgreSQL)
+connPostgres = dbConnect(
+  dbDriver("PostgreSQL"), dbname="StanfordSQL", 
+  host="localhost", port=5432, 
+  user="postgres", password="asshole"
+)
+DBI::dbGetQuery(connPostgres,"
+select ID, name, grade, (select count(*) from Friend where id1 = H.id) from Highschooler H order by ID
+                
+")
+```
