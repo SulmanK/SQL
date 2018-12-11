@@ -1,28 +1,3 @@
----
-title: 'SQL: Table of Contents'
-author: "Sulman Khan"
-date: "`r format(Sys.time(), '%d %B, %Y')`"
-output: 
-  html_document:
-    css: C:/Users/sulma/OneDrive/Desktop/Data Science/Machine Learning/gf_small_touches.css
-    highlight: tango
-    mathjax: default
-    theme: cerulean
----
-
-```{r setup, cache = FALSE, echo = FALSE, message = FALSE, warning = FALSE, tidy = FALSE}
-require(knitr)
-options(width = 160, scipen = 5)
-options(dplyr.print_max = 200)
-# options(width = 100, digits = 7)
-opts_chunk$set(message = FALSE, error = FALSE, warning = FALSE, 
-               collapse = TRUE, tidy = FALSE,
-               cache = TRUE, cache.path = '.cache/', 
-               fig.align = 'left', dpi = 100, fig.path = 'figures/NBA/')
-# opts_chunk$set(dev="png", 
-#                dev.args=list(type="cairo"),
-#                dpi=96)
-```
 # SQL
 Udemy - Course on PostgreSQL published under my [RPubs repository](https://rpubs.com/SulmanKhan/444167) and [GitHub repository](https://github.com/SulmanK/SQL)
 
