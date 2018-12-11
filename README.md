@@ -48,14 +48,17 @@ Includes lecture notes and exercises using SQL commands.
       + [Views](https://rpubs.com/SulmanKhan/447035)
       + [PostGreSQL with Python](https://github.com/SulmanK/SQL/blob/master/Lecture%20Notes/Extra/PostGreSQL%20with%20Python.txt)
     
-## Exercises
+## UDEMY: Exercises
  * [SQL: Statement Fundamentals - General Challenges](https://rpubs.com/SulmanKhan/446192)
  * [SQL: Assessment Test 1 - GROUP BY Statements](https://rpubs.com/SulmanKhan/446225)
  * [SQL: Assessment Test 2 - JOINS and Advanced SQL Commands](https://rpubs.com/SulmanKhan/446873)
  * [SQL: Assessment Test 3 - Creating Databases and Tables](https://rpubs.com/SulmanKhan/447015)
  
 
-
+## Stanford Lagunita: Exercises
+ * [SQL: Stanford Exercises - Movie Rating -  PART I](https://rpubs.com/SulmanKhan/449883)
+ * [SQL: Stanford Exercises - Movie Rating - PART II](https://rpubs.com/SulmanKhan/449884)
+ * [SQL: Stanford Exercises - Movie Rating - PART III](https://rpubs.com/SulmanKhan/449885)
 
 
 
